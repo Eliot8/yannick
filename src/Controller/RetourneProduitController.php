@@ -139,7 +139,6 @@ class RetourneProduitController extends AbstractController
         /* pour envoye un message par email (just gmail) */
         $message = (new \Swift_Message('l\'administrateur a refusée votre réclamation')) // titre de message
             ->setFrom($security->getUser()->getEmail()) // email de admin ** IMPORTANT ** aller à .env pour plus informations.
-            // ->setFrom('patcool140383@gmail.com') // email de admin ** IMPORTANT ** aller à .env pour plus informations.
             ->setTo($retourn_info->getClient()->getEmail()) // email de le client
             ->setBody('Malheureusement, votre réclamation a été refusée .'); // le message
         $mailer->send($message); // envoye le message
