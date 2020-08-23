@@ -14,15 +14,15 @@ class AdminAccountController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function login(AuthenticationUtils $utils)
-{
-$username = $utils->getLastUsername();
-$error = $utils->getLastAuthenticationError();
+    {
+        $username = $utils->getLastUsername();
+        $error = $utils->getLastAuthenticationError();
 
-return $this->render('admin/account/login.html.twig', [
-    'hasError' => $error !== null,
-    'username' => $username]);
-
-}
+        return $this->render('admin/account/login.html.twig', [
+            'hasError' => $error !== null,
+            'username' => $username
+        ]);
+    }
 
     /**
      * permet de se deconnecter
@@ -31,8 +31,10 @@ return $this->render('admin/account/login.html.twig', [
      *
      * @return void
      */
-public function logout()
-{
-    //...
-}
+    public function logout()
+    {
+        //...
+    }
+
+    
 }

@@ -136,7 +136,7 @@
         "version": "v0.3.3"
     },
     "php": {
-        "version": "7.3"
+        "version": "7.4"
     },
     "phpdocumentor/reflection-common": {
         "version": "2.0.0"
@@ -188,6 +188,9 @@
         "files": [
             "./config/packages/stof_doctrine_extensions.yaml"
         ]
+    },
+    "stripe/stripe-php": {
+        "version": "v7.45.0"
     },
     "swiftmailer/swiftmailer": {
         "version": "v6.2.3"

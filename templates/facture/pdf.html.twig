@@ -1,350 +1,268 @@
-
-
-{% block title %}Hello FactureController!{% endblock %}
-
+{% block title %}*{% endblock %}
 {% block body %}
-    <page backtop="0mm" backright="10mm" backbottom="20mm" backleft="10mm">
-        <style type="text/css">
-            <!--  table
-            {
-                width: 100%;
-                border-collapse:collapse;
-                font-size:16px}
+<page backtop="0mm" backright="10mm" backbottom="20mm" backleft="10mm">
+    <style type="text/css">
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px
+        }
 
 
-            .header td
-            {
-                width: 50%;
-                vertical-align: top}
+        .header td {
+            width: 50%;
+            vertical-align: top
+        }
 
 
-            .text-left
-            {
-                text-align: left}
+        .text-left {
+            text-align: left
+        }
+
+        .text-right {
+            text-align: right
+        }
 
 
-            .text-right
-            {
-                text-align: right}
+        .text-center {
+            text-align: center
+        }
 
 
-            .text-center
-            {
-                text-align: center}
+        .separator {
+            height: 20px;
+            width: 100%
+        }
 
 
-            .separator
-            {
-                height: 20px;
-                width: 100%}
+        .content td {
+            border: solid 1px #CFD1D2;
+            padding: 5px;
+        }
 
 
-            .content td
-            {
-                border:solid 1px #CFD1D2;
-                padding: 5px;
-            }
+        .content th {
+            border: solid 1px #000000;
+            padding: 5px;
+            background-color: #000000;
+            color: #FFFFFF
+        }
 
 
-            .content th
-            {
-                border:solid 1px #000000;
-                padding: 5px;
-                background-color: #000000;
-                color: #FFFFFF}
+        .ligne1Content {
+            background-color: #57B223
+        }
 
 
-            .ligne1Content
-            {
-                background-color:#57B223}
+        .couleurgris {
+            background-color: #DDDDDD;
+            height: auto;
+        }
 
 
-            .couleurgris
-            {
-                background-color:#DDDDDD;
-                height:auto;
-            }
+        .tht,
+        .taxe,
+        .ttc {
+            font-size: 1.2em;
+        }
 
 
-            .tht, .taxe, .ttc
-            {
-                font-size: 1.2em;
-            }
+        .ttc {
+            color: #57B223;
+            font-weight: bold;
+        }
 
 
-            .ttc
-            {
-                color:#57B223;
-                font-weight:bold;
-            }
+        .couleurverte {
+            background-color: #57B223
+        }
 
 
-            .couleurverte
-            {
-                background-color: #57B223}
+        .couleurmoinsgris {
+            background: #EEEEEE;
+        }
 
 
-            .couleurmoinsgris
-            {
-                background: #EEEEEE;
-            }
+        .taille1 {
+            width: 40%;
+        }
 
 
-            .taille1
-            {
-                width:40%;
-            }
+        .taille2 {
+            width: 15%;
+        }
 
 
-            .taille2
-            {
-                width:15%;
-            }
+        .taille3 {
+            width: 15%;
+        }
 
 
-            .taille3
-            {
-                width:15%;
-            }
+        .taille4 {
+            width: 20%;
+        }
 
 
-            .taille4
-            {
-                width:20%;
-            }
+        .taille5 {
+            width: 10%;
+        }
 
 
-            .taille5
-            {
-                width:10%;
-            }
+        .header1 {
+            width: 50%
+        }
 
 
-            .header1
-            {
-                width:50%}
+        .header2 {
+            width: 50%
+        }
 
 
-            .header2
-            {
-                width:50%}
+        .tailleligne {
+            height: auto;
+        }
 
 
-            .tailleligne
-            {
-                height:auto;
-            }
+        .taille1,
+        taille2,
+        taille3,
+        taille4,
+        taille5 {
+            height: auto;
+        }
 
 
-            .taille1, taille2, taille3, taille4, taille5
-            {
-                height:auto;
-            }
+        span {
+            font-size: 14px;
+            font-weight: bold;
+            color: #57B223;
+        }
 
 
-            span
-            {
-                font-size:14px;
-                font-weight:bold;
-                color:#57B223;
-            }
+        h1,
+        h2,
+        h3 {
+            color: #57B223;
+        }
 
 
-            h1, h2, h3
-            {
-                color:#57B223;
-            }
-
-
-            .colorwhite
-            {
-                color:white}
-        </style>
-        <table class="header">
-            <tr>
-                <td class="text-lef">
-                    <h1>Facture</h1>
-                    <br>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-left">
-                    <span>DE  Sell Shoes</span>
-                    <br/>
-                    <br/>
-
-                    <br>
-                </td>
-                <td class="text-right">
-                    <span>FACTURE N°:</span>
-                    {{ facture.id }}
-                    <br/>
-                    <br/>
-                    <span>DATE de Paiement: </span>
-                  {{  facture.datePaiement ? facture.datePaiement|date('d-m-Y') : '' }}
-                    <br/>
-                    <br/>
-                    <span>N° TVA:</span>
-                    {{ facture.montantTVA }}
-                </td>
-            </tr>
-            <tr>
-                <td class="text-left">
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <span>FACTURÉ À</span>
-                    <br/>
-                    <br/>
-                   client
-                    <br>
-                </td>
-                <td class="text-right"></td>
-            </tr>
-        </table>
-        <table class="content">
-            <thead>
-            <tr class="ligne1Content">
+        .colorwhite {
+            color: white
+        }
+    </style>
+    <table class="header" style="font-family: Arial, Helvetica, sans-serif;">
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <span style="font-size: 22px;">Facture</span>
+                <br>
+                <br>
+                <br>
+                <br>
+            </td>
+        </tr>
+        <tr>
+            <td class="text-left">
+                <span style="text-transform: uppercase; font-size: 18px;">DE Sell Shoes</span>
+                <br />
+                <br />
+                <span>Facture N°:</span>
+                000 {{ facture_id }}
+                <br />
+                <span>Date de paiment: </span>
+                {{ "now" | date('Y-m-d') }}
+                <br />
+                <span>N° TVA:</span>
+                20 %
+                <br />
+            </td>
+            <td class="text-right">
+                <br />
+                <br />
+                {{ app.user.nom }} {{ app.user.prenom }}
+                <br />
+                <span style="text-transform: uppercase;">{{ app.user.adresse }}</span>
+                <br />
+                <span>livré le :</span>
+                {{ livraision.dateLivraison | date("m/d/Y") }}
+            </td>
+        </tr>
+    </table>
+    <br>
+    <br>
+    <br>
+    <table class="content">
+        <thead>
+            <tr style="font-family: 'Courier New', Courier, monospace;">
                 <td class="text-left couleurgris taille1">
                     <b>PRESTATION</b>
                 </td>
                 <td class="text-center couleurmoinsgris taille2">
                     <b>QUANTITÉ</b>
                 </td>
-                <td class="text-center couleurgris taille3">
+                <td class="text-center taille3" style="background-color:lightgray;">
+                    <b>PRIX</b>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr class="couleurgris">
+                <td class="text-left couleurgris taille1" style="text-transform: capitalize;">
+                    {{ item.product.nom }}
+                </td>
+                <td class="text-center couleurmoinsgris taille2">
+                    {{ item.qte }}
+                </td>
+                <td class="text-center taille4" style="background-color:lightgray;">
+                    {{ ((item.promo != 0) ? item.promo : item.product.prix ) * item.qte }}
+                </td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="2" class="text-center taille5"
+                    style="background-color:lightsteelblue; font-family: 'Courier New' , Courier, monospace;">
                     <b>PRIX HT</b>
                 </td>
-                <td class="text-center couleurgris taille5">
-                    <b>TAXE</b>
-                </td>
-                <td class="text-center couleurverte taille4 colorwhite">
-                    <b>TOTAL HT</b>
-                </td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="couleurgris">
-                <td class="text-left couleurgris taille1">
-                     facture.designation1
-                </td>
-                <td class="text-center couleurmoinsgris taille2">
-                     facture.quantite1
-                </td>
-                <td class="text-center taille3">
-                     facture.prixht1 €
-                </td>
-                <td class="text-center taille5">
-                    {{ facture.montantTVA }}%
-                </td>
-                <td class="text-center couleurverte taille4 colorwhite">
-                     facture.quantite1 * facture.prixht1 €
-                </td>
-            </tr>
-
-
-            <tr class="couleurgris">
-                <td class="text-left couleurgris taille1">
-                     facture.designation2
-                </td>
-                <td class="text-center couleurmoinsgris taille2">
-                     facture.quantite2
-                </td>
-                <td class="text-center taille3">
-                     facture.prixht2 €
-                </td>
-                <td class="text-center taille5">
-                    facture.taxe2 %
-                </td>
-                <td class="text-center couleurverte taille4 colorwhite">
-                     facture.quantite2 * facture.prixht2 €
-                </td>
-            </tr>
-            <tr class="couleurgris">
-                <td class="text-left couleurgris taille1">
-                     facture.designation3
-                </td>
-                <td class="text-center couleurmoinsgris taille2">
-                    facture.quantite3
-                </td>
-                <td class="text-center taille3">
-                    facture.prixht3 €
-                </td>
-                <td class="text-center taille5">
-                     facture.taxe3 %
-                </td>
-                <td class="text-center couleurverte taille4 colorwhite">
-                    facture.quantite3 * facture.prixht3 €
-                </td>
-            </tr>
-
-
-            </tbody>
-            <tfoot>
-            <tr>
-                <td colspan="4" class="text-right tht">
-                    TOTAL HT
-                </td>
-                <td class="tht text-center">
-                     facture.quantite1 * facture.prixht1 + facture.quantite2 * facture.prixht2 + facture.quantite3 * facture.prixht3 €
+                <td class="text-center taille3" style="background-color:lightsteelblue;">
+                    {# {{(item.promo != 0) ? ((item.promo * item.qte) - ((item.promo * item.qte) * 0.2)) ~ '.00' : ((item.product.prix * item.qte) - ((item.product.prix * item.qte)  * 0.2)) ~ ' €' }} #}
+                    {{(total - (total * 0.2))}}
                 </td>
             </tr>
             <tr>
-                <td colspan="4" class="text-right tht">
-                    TAXE à facture.taxe1 %
+                <td colspan="2" class="text-center couleurgris taille5"
+                    style="background-color:lightskyblue; font-family: 'Courier New' , Courier, monospace;">
+                    <b>TAXE 20%</b>
                 </td>
-                <td class="text-center">
-                    facture.prixht1 * (1+(facture.taxe1/100)) €
-                </td>
-            </tr>
-
-
-            <tr>
-                <td colspan="4" class="text-right tht">
-                    TAXE à  facture.taxe2 %
-                </td>
-                <td class="text-center">
-                     facture.prixht2 * (1+(facture.taxe2/100)) €
+                <td class="text-center couleurverte taille4" style="background-color:lightskyblue;">
+                    {{ (total * 0.2) }}
                 </td>
             </tr>
-
-
+        </tbody>
+        <tfoot>
             <tr>
-                <td colspan="4" class="text-right tht">
-                    TAXE à  facture.taxe3 %
+                <td colspan="2" class="text-center"
+                    style="background-color:lightgreen; font-family: 'Courier New' , Courier, monospace;">
+                    <b>TOTAL TTC</b>
                 </td>
-                <td class="text-center">
-                    facture.prixht3 * (1+(facture.taxe3/100)) €
+                <td class="tht text-center" style="background-color:lightgreen;">
+                    {{ total ~ ' €' }}
                 </td>
             </tr>
-            <tr>
-                <td colspan="4" class="text-right">
-                    <h3>TOTAL TTC À PAYER</h3>
-                </td>
-                <td class="text-center">
-                    <h3>  (facture.quantite1 * facture.prixht1 + facture.quantite2 * facture.prixht2 + facture.quantite3 * facture.prixht3) + (facture.prixht1 * (1+(facture.taxe1/100)))+(facture.prixht2 * (1+(facture.taxe2/100)))+(facture.prixht3 * (1+(facture.taxe3/100))) €</h3>
-                </td>
-            </tr>
-            <tr>
+            <!-- <tr>
                 <td colspan="5">
                     <span>CONDITIONS ET MOYENS DE PAIEMENT:</span>
-                    <br/>
-                     facture.conditions
+                    <br />
+                    facture.conditions
                 </td>
             </tr>
-
-
             <tr>
                 <td colspan="5">
                     <span>NOTES OU REMARQUES PARTICULIÈRES:</span>
-                    <br/>
-                     facture.consignes
+                    <br />
+                    facture.consignes
                 </td>
-            </tr>
-            </tfoot>
-        </table>
-    </page>
+            </tr> -->
+        </tfoot>
+    </table>
+</page>
 {% endblock %}

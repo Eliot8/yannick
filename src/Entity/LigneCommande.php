@@ -47,6 +47,11 @@ class LigneCommande
      */
     private $commande;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": 0})
+     */
+    private $reclame;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -120,6 +125,18 @@ class LigneCommande
     public function setCommande(?Commande $commande): self
     {
         $this->commande = $commande;
+
+        return $this;
+    }
+
+    public function getReclame(): ?bool
+    {
+        return $this->reclame;
+    }
+
+    public function setReclame(bool $reclame): self
+    {
+        $this->reclame = $reclame;
 
         return $this;
     }

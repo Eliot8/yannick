@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Retourner{% endblock %}
+
+{% block body%}
+<div class="container">
+    <div class="bg-info pt-2 pb-1 my-4 rounded">
+        <h3 class="lead text-center"><a href="{{ path('commande_produit') }}" class="text-white">Retourne Produit {{produit.modeleChaussure.nom}}</a></h3>
+    </div>
+    <div class="row">
+        <!-- <div class="col-md-12"> -->
+            <div class="col-md-4">
+                <a href="/detail/chaussure/{{ produit.modeleChaussure.id }}" class="card-link text-white">
+                    <img class="d-block w-100 rounded" src="/img/{{produit.modeleChaussure.coverImage}}" alt="first slide"
+                        height="260">
+                </a>
+            </div>
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between">
+                    <h3>Taille : {{ produit.taille.taille }}</h3>
+                    <h3>Quantite : {{ produit.quantite }}</h3>
+                    <h3>Prix : {{ produit.prix  ~ '€'}}</h3>
+                </div>
+                {{form(form)}}
+            </div>
+            <hr>
+        <!-- </div> -->
+    </div>
+</div>
+{% endblock %}

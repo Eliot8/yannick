@@ -2,41 +2,49 @@
 {% block title %}Chaussures!{% endblock %}
 
 {% block body %}
-    <h1 class="my-3">liste des chaussures</h1>
+<div class="container">
+    <div class="bg-info pt-2 pb-1 my-4 rounded">
+        <h3 class="lead text-center text-capitalize">liste des chaussures</h3>
+    </div>
+    <!-- <h1 class="my-3"></h1> -->
     {#}% for modeleChaussure in chaussures %}
     <a href="/detail/chaussure/{{modeleChaussure.id}}">{{modeleChaussure.nom}}</a><br/>
     {% endfor %}
 
 
 {% endblock %#}
-<div class="row">
-{% for modeleChaussure in chaussures %}
-    <div class="col-md-4">
-        <div class="card-header text-center">
-            <a href="/detail/chaussure/{{ modeleChaussure.id }}">{{ modeleChaussure.nom }}  </a>, <strong>{{ modeleChaussure.prix }}&euro;</strong><br>
-        {% if modeleChaussure.commentaires|length>0 %}
-            {% include 'partials/rating.html.twig' with {'rating':modeleChaussure.avgRatings} %}
-            {% else %}
-                <small>Pas encore noté</small>
-                {% endif %}
+    <div class="row">
+        {% for modeleChaussure in chaussures %}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header text-center">
+                    <a href="/detail/chaussure/{{ modeleChaussure.id }}">{{ modeleChaussure.nom }} </a>,
+                    <strong>{{ modeleChaussure.prix }}&euro;</strong><br>
+                    {% if modeleChaussure.commentaires|length>0 %}
+                    {% include 'partials/rating.html.twig' with {'rating':modeleChaussure.avgRatings} %}
+                    {% else %}
+                    <small>Pas encore noté</small>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <h4 class="text-capitalize text-center mb-4">
+                        <a href="{{ path('detail_chaussure',{'id':modeleChaussure.id}) }}">{{ modeleChaussure.nom }}
+                        </a>
+                    </h4>
+                    <a href="{{ path('detail_chaussure',{'id':modeleChaussure.id}) }}">
+                        <img src="/img/{{ modeleChaussure.coverImage }}" alt="Image de la chaussure"
+                            class="w-100 rounded" />
+                    </a>
+                    <p class="font-weight-light p-2">
+                        description de la chaussure
+                    </p>
+                    <a href="{{ path('detail_chaussure',{'id':modeleChaussure.id}) }} " class="btn btn-secondary float-right">En
+                        savoir
+                        plus!</a>
+                </div>
+            </div>
         </div>
-        <a href="{{ path('detail_chaussure',{'id':modeleChaussure.id}) }}">
-            <img src="/img/{{ modeleChaussure.coverImage }}" alt="Image de la chaussure"
-                 style="height:200px;width:60%;display:block"/>
-        </a>
-
-        <div class="card-body">
-            <h4 class="card-title">
-                <a href="{{ path('detail_chaussure',{'id':modeleChaussure.id}) }} " >{{ modeleChaussure.nom }} </a>
-            </h4>
-            <p class="card-text">
-                description de la chaussure
-            </p>
-            <a href="{{ path('detail_chaussure',{'id':modeleChaussure.id}) }} " class="btn btn-secondary">en savoir plus!</a>
-
-
-        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-        </div>
+</div>
 {% endblock %}

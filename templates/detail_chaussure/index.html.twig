@@ -3,146 +3,220 @@
 {% block title %}Hello DetailChaussureController!{% endblock %}
 
 {% block body %}
-    <h1>detail de la chaussure selectionnée</h1>
+<div class="container">
+     {# <img class="fit-picture" src="/img/{{ chaussure.coverImage }}" alt="nike" width="50">  #}
+    <div class="bg-info pt-2 pb-1 my-4 rounded">
+        <h3 class="lead text-center">Detail de la chaussure selectionnée</h3>
+    </div>
 
     <div class="row">
-        <img class="fit-picture"
-             src="/img/{{ chaussure.coverImage }}"
-             alt="nike" width="50">
-
-        <div class="card-text">
-            <h1>{{ chaussure.nom }}</h1>
-            <p>{{ chaussure.description }}</p>
-            <p class="h2">
-                <strong>1 piece pour</strong><strong>{{ chaussure.prix }}&euro;</strong>
-            </p>
-            <p class="h2">
-                <strong>Qty: <span id="available_qty">0</span></strong>
-            </p>
-            <select name="taille" id="taille" required class="form-control">
-                <option value="">taille</option>
-                {% for tail in taille %}
-                    <option data-qty="{{ (stocksArr[tail.id] is defined)?stocksArr[tail.id]:0 }}" value="{{ tail.id }}">{{ tail.taille }}</option>
-                {% endfor %}
-            </select>
-            <a href="{{ path('panier_add',{'id':chaussure.id}) }}" id="cart_url" class="btn btn-success float-right"><i class="fas fa-shopping-cart mr-1"></i> Ajouter au panier!</a>
-        </div>
-        <div id="carouselExampleIndicators" class="carousel slide"
-             data-ride="carousel">
-            <ol class="carousel-indicators">
-                {% for photo in chaussure.Photos() %}
+        <div class="col-md-4">
+            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    {% for photo in chaussure.Photos() %}
                     <li data-target="#carouselExampleIndicators" data-slide-to="{{
-                    loop.index0 }}" {% if loop.first %} class="active"{% endif %}></li>
-                {% endfor %}
-            </ol>
+                    loop.index0 }}" {% if loop.first %} class="active" {% endif %}></li>
+                    {% endfor %}
+                </ol>
 
-            <div class="carousel-inner">
-                {% for photo in chaussure.Photos %}
+                <div class="carousel-inner">
+                    {% for photo in chaussure.Photos %}
                     <div class="carousel-item {% if loop.first %}active{% endif %}">
-                        <img class="d-block w-100" src="/img/{{photo.url}}" alt="first slide" width="50">
+                        <img class="d-block w-100 rounded" src="/img/{{photo.url}}" alt="first slide" height="450">
                     </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
             </div>
-            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div>
 
-        <section class="commentaires">
-            <h1>
-                Commentaires :
-            </h1>
-            {% set commentaire = chaussure.commentaireFromClient(app.user)%}
-            {% if commentaire is not null %}
+        </div>
+        <div class="col-md-8">
+            <div class="card-text">
+                <h1 class="display-4 text-capitalize">{{ chaussure.nom }}
+                {% if promotion is empty %}
+
+                {% else %}
+                    <span class="float-right badge badge-danger" style="font-size: 18px">Promotion de {{ promotion.pourcentage ~ '%' }}
+                    </span>
+                {% endif %}
+                </h1>
+                <p class="font-weight-light pl-2">{{ chaussure.description }}</p>
+                {% if promotion is empty %}
+                <h4 class="text-center bg-primary p-2 rounded">
+                    1 piece pour <span class="text-warning">{{ chaussure.prix }}</span>&euro;
+                </h4>
+                {% else %}
+                <h4 class="text-center bg-primary p-2 rounded" >
+                    1 piece pour  <span class="text-warning">{{ (chaussure.prix - (chaussure.prix * (promotion.pourcentage / 100)))  ~ ' €'}}</span>
+                    <small class="text-danger float-right" style="text-decoration-line: line-through;">{{ chaussure.prix }}&euro;</small>
+                </h4>
+                {% endif %}
+                <div class="row my-5">
+                    <div class="col-md-8">
+                        {# taille #}
+                        <label for="taille">Taille :</label>
+                        <select name="taille" id="taille" required class="form-control">
+                            <option data-qty="0" selected>taille</option>
+                            {# {% for tail in taille %} #}
+                            {# <option data-qty="{{ (stocksArr[tail.id] is defined)?stocksArr[tail.id]:0 }}" value="{{ tail.id }}">{{ tail.taille }}</option> #}
+                            {# {% endfor %} #}
+                            {% for stock in stocks %}
+                            <option data-qty="{{ stock.quantite }}" value="{{ stock.id }}">{{ stock.taille.taille }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- qte -->
+                        <label for=""> Quantite :</label>
+                        <div class="d-block d-flex justify-content-around w-50">
+                            <button class="btn btn-sm btn-dark" id="moins">-</button>
+                            <span id="available_qty" class="badge badge-warning d-block py-2"
+                                style="font-size: 17px;">0</span>
+                            <button class="btn btn-sm btn-dark" id="plus">+</button>
+                        </div>
+                    </div>
+                </div>
+                <form action="{{ path('cart_add', {'id':chaussure.id}) }}" method="POST">
+                    <input type="hidden" name="qte" id="qte" value="">
+                    <input type="hidden" name="taille" id="_taille" value="">
+                    {# <a href="{{ path('panier_add',{'id':chaussure.id}) }}" id="cart_url"
+                        class="btn btn-success float-right mt-5"><i class="fas fa-shopping-cart mr-1"></i> Ajouter au
+                        panier!</a> #}
+                    <button type="submit" class="btn btn-success float-right"><i class="fas fa-shopping-cart mr-1"></i> Ajouter au panier!</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <section class="commentaires">
+                <div class="bg-info pt-2 pb-1 my-4 rounded">
+                    <h3 class="lead text-center">Commentaires :</h3>
+                </div>
+                <!-- <h1>
+                        Commentaires :
+                    </h1> -->
+                {% set commentaire = chaussure.commentaireFromClient(app.user)%}
+                <!-- {% if commentaire is not null %}
                 <blockquote>
                     {{ commentaire.commentaire }}
                 </blockquote>
                 <strong>Note:</strong>{% include 'partials/rating.html.twig' with {'rating':commentaire.rating} %}
-            {% endif %}
-            {% if chaussure.commentaires|length > 0 %}
-
-                <h2 class="mb-3">commentaires des clients:</h2>
-                <div class="alert alert-info">
-                    <h4 class="alert-heading text-center">
-                        <div class="row align-items-center">
-                            <div class="col">
-                                Note globale donnée par nos clients
-                            </div>
-                            <div class="col">
-                                {% include 'partials/rating.html.twig' with {'rating':
-                                    chaussure.avgRatings} %}
-                                <br>
-                                <small>(calculée sur {{ chaussure.commentaires|length }} avis)</small>
-                            </div>
+                {% endif %} -->
+                {% if chaussure.commentaires|length > 0 %}
+                <h3 class="mb-3 text-capitalize">commentaires des clients:</h3>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        {% for comment in chaussure.commentaires %}
+                        <div class="bg-secondary rounded mb-3 py-3 px-3">
+                            <strong class="text-uppercase text-info"> {{ comment.getClient().getNom() }} </strong> a
+                            dit:
+                            <blockquote class="bg-white text-dark px-4 py-1 w-auto rounded mt-2">
+                                {{ comment.commentaire }}
+                                <span class="float-right">Note donnée :
+                                    {% include 'partials/rating.html.twig' with {'rating':comment.rating} %}</span>
+                            </blockquote>
+                            <blockquote class="py-1">
+                                <small class="float-right">{{ comment.dateCommentaire | date('d/m/Y à H:i') }}</small>
+                            </blockquote>
                         </div>
-                    </h4>
-                </div>
-
-                {% for comment in chaussure.commentaires %}
-
-                    <div class="bg-light rounded mb-3 py-3 px-3">
-                        <blockquote>
-
-                            (<small>{{ comment.dateCommentaire | date('d/m/Y à H:i') }}</small>)
-
-                        </blockquote>
-                        <strong>   {{ comment.getClient().getNom() }} </strong> a dit:
-                        <blockquote>
-                            {{ comment.commentaire }}
-                        </blockquote>
-                        <strong>Note donnée:</strong>
-                        {% include 'partials/rating.html.twig' with {'rating':
-                            comment.rating} %}
-
+                        {% endfor %}
                     </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-primary">
+                            <h4 class="alert-heading text-center">
+                                <div class="row align-items-center">
+                                    <h6 class="col">
+                                        Note globale donnée par nos clients
+                                    </h6>
+                                    <div class="col" style="font-size: 18px;">
+                                        {% include 'partials/rating.html.twig' with {'rating':
+                                        chaussure.avgRatings} %}
+                                        <br>
+                                        <small>(calculée sur {{ chaussure.commentaires|length }} avis)</small>
+                                    </div>
+                                </div>
+                            </h4>
+                        </div>
 
-
-
-                {% endfor %}
-
-            {% endif %}
-
-            {% if app.user %}
-                {% set comment = chaussure.commentaireFromClient(app.user)%}
-                {% if comment is not null %}
-                    <blockquote>
-                        {{ comment.commentaire }}
-                    </blockquote>
-                    <strong>Note:</strong>{% include 'partials/rating.html.twig' with {'rating':comment.rating} %}
-                {% else %}
-                    {{ form_start(commentForm) }}
-                    {{ form_row(commentForm.commentaire,{}) }}
-                    {{ form_row(commentForm.rating,{}) }}
-                    <button type="submit" class="btn btn-success">Commenter</button>
-                    {{ form_end(commentForm) }}
+                        {% if app.user %}
+                        {% set comment = chaussure.commentaireFromClient(app.user)%}
+                        <!-- {% if comment is not null %} -->
+                        <!-- <blockquote>
+                                {{ comment.commentaire }}
+                            </blockquote>
+                            <strong>Note:</strong>{% include 'partials/rating.html.twig' with {'rating':comment.rating} %} -->
+                        <!-- {% else %} -->
+                        {{ form_start(commentForm) }}
+                        {{ form_row(commentForm.commentaire,{}) }}
+                        {{ form_row(commentForm.rating,{}) }}
+                        <button type="submit" class="btn btn-success float-right"><i
+                                class="fas fa-comment-dots mr-1"></i>
+                            Commenter</button>
+                        {{ form_end(commentForm) }}
+                        <!-- {% endif %} -->
+                        {% else %}
+                        <h2>Vous ne pouvez pas commenter si vous n'êtes pas connecté</h2>
+                        <a href="{{ path('account_login') }}" class="btn btn-primary">connexion</a>
+                        {% endif %}
+                    </div>
+                </div>
                 {% endif %}
-            {% else %}
-                <h2>Vous ne pouvez pas commenter si vous n'êtes pas connecté</h2>
-                <a href="{{ path('account_login') }}" class="btn btn-primary">connexion</a>
-            {% endif %}
-
-
-
-        </section>
+            </section>
+        </div>
     </div>
-
+</div>
 
 {% endblock %}
 {% block javascripts %}
-    {{ parent() }}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            var carturl = "{{ path('panier_add',{'id':chaussure.id}) }}";
-            $("#taille").change(function () {
-                $("#cart_url").attr('href', (carturl + '?taille='+$(this).val()));
-                $("#available_qty").html($(this).find('option:selected').attr('data-qty'));
-            });
+{{ parent() }}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var carturl = "{{ path('panier_add',{'id':chaussure.id}) }}";
+        $("#taille").change(function () {
+            $("#cart_url").attr('href', (carturl + '?taille=' + $(this).val()));
+            $("#available_qty").html($(this).find('option:selected').attr('data-qty'));
+            $("#qte").val($(this).find('option:selected').attr('data-qty'));
+            $("#_taille").val($(this).find('option:selected').text());
         });
-    </script>
-{% endblock %}
+        // on the load page
+        $("#available_qty").html($('#taille').find('option:selected').attr('data-qty'));
+        $("#qte").val($('#taille').find('option:selected').attr('data-qty'));
 
+        // QTE MOINS
+        $('#moins').click(function () {
+            var qte = parseInt($("#available_qty").html());
+            if ((qte - 1) < 0) {
+                $("#available_qty").html(0);
+                $("#qte").val(0);
+            } else {
+                $("#available_qty").html(qte - 1);
+                $("#qte").val(qte - 1);
+            }
+
+        });
+
+        // QTE PLUS
+        $('#plus').click(function () {
+            var qte = parseInt($("#available_qty").html());
+            var qte_stable = $('#taille').find('option:selected').attr('data-qty');
+            if ((qte + 1) > qte_stable) {
+                $("#available_qty").html(qte_stable);
+                $("#qte").val(qte_stable);
+            } else {
+                $("#available_qty").html(qte + 1);
+                $("#qte").val(qte + 1);
+            }
+        });
+    });
+</script>
+{% endblock %}

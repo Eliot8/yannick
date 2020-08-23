@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}reclamation{% endblock %}
+
+{% block body%}
+<div class="container">
+    <div class="bg-info pt-2 pb-1 my-4 rounded">
+        <h3 class="lead text-center">reclamation : {{produit.modeleChaussure.nom}}</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card mb-3">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <a href="/detail/chaussure/{{ produit.modeleChaussure.id }}"
+                            class="card-link text-white card-img-top">
+                            <img class="d-block w-100 rounded" src="/img/{{produit.modeleChaussure.coverImage}}"
+                                alt="first slide" height="260">
+                        </a>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title text-uppercase">{{produit.modeleChaussure.nom}}</h5>
+                            <div class="d-flex justify-content-between">
+                                <h6 class="card-title">Taille : {{ produit.taille.taille }}</h6>
+                                <h6 class="card-title">Quantite : {{ produit.quantite }}</h6>
+                                <h6 class="card-title">
+                                Prix : 
+                                {% for promotion in promotions %}
+                                {% if promotion.dateFin | date('Y-m-d') >= "now"|date('Y-m-d') %}
+                                {{ (((promotion.modeleChaussure.id == produit.modeleChaussure.id) ? produit.modeleChaussure.prix - (produit.modeleChaussure.prix * (promotion.pourcentage / 100)) : produit.modeleChaussure.prix))  ~ '€'}}
+                                {% endif %}
+                            {% endfor %}
+                                </h6>
+                            </div>
+                            <hr>
+                            <span class="card-text">Raison : </span>
+                            <small class="card-text">{{retourne_info.raison}}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <p class="card-text float-left">{{ retourne_info.client.nom }}
+                    <small class="text-muted d-block">{{retourne_info.dateRetourne | date('Y-m-d')}}</small> </p>
+                    <a href="{{ path('refuser_reclamation', {'id':retourne_info.id}) }}"
+                        class="btn btn-danger float-right">Refuser</a>
+                    <a href="{{ path('accepter_reclamation', {'id':retourne_info.id}) }}"
+                        class="btn btn-success float-right mx-1">Accepter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

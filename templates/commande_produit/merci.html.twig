@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}list des commandes{% endblock %}
+
+{% block body%}
+<div class="container" style="height: 55vh;">
+    <div class="row mt-4">
+        <div class="col-md-12 mt-4">
+            <a href="{{ path('commande_produit') }}">Allez à ma liste des commande</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block javascripts %}
+<script>
+    // alert('nice');
+    window.location.href = '/facture';
+</script>
+{% endblock %}

@@ -25,7 +25,6 @@ class Stock
 
     /**
      * @ORM\ManyToOne(targetEntity=ModeleChaussure::class, inversedBy="stocks")
-     * @JoinColumn(name="id", referencedColumnName="modeleChaussure_id", onDelete="CASCADE")
      */
     private $modeleChaussure;
 

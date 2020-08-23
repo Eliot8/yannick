@@ -89,6 +89,10 @@ class ModeleChaussure
      */
     private $taille;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\RetourneProduit", mappedBy="produit")
+     */
+    private $retourne;
 
     public function __construct()
     {
@@ -99,6 +103,7 @@ class ModeleChaussure
         $this->photos = new ArrayCollection();
         $this->stocks = new ArrayCollection();
         $this->taille = new ArrayCollection();
+        $this->retourne = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -399,4 +404,37 @@ class ModeleChaussure
     {
         return $this->taille;
     }
+
+    /**
+     * @return Collection|RetourneProduit[]
+     */
+    public function getRetourne(): Collection
+    {
+        return $this->retourne;
+    }
+
+    public function addRetourne(RetourneProduit $retourne): self
+    {
+        if (!$this->retourne->contains($retourne)) {
+            $this->retourne[] = $retourne;
+            $retourne->setProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRetourne(RetourneProduit $retourne): self
+    {
+        if ($this->retourne->contains($retourne)) {
+            $this->retourne->removeElement($retourne);
+            // set the owning side to null (unless already changed)
+            if ($retourne->getProduit() === $this) {
+                $retourne->setProduit(null);
+            }
+        }
+
+        return $this;
+    }
+
+    
 }

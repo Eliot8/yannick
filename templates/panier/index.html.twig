@@ -1,4 +1,4 @@
-
+{# {% extends 'base.html.twig' %} #}
 
 {% block title %}Hello PanierController!{% endblock %}
 <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css">
@@ -6,9 +6,11 @@
 
 
 {% block body %}
-    <div>
-        <h1>Votre panier</h1>
-    </div>
+
+        <div class="bg-info pt-2 pb-1 my-4 rounded">
+            <h3 class="lead text-center">Panier</h3>
+        </div>
+   
     {% if items| length > 0 %}
         <table class="table">
             <thead>

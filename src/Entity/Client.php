@@ -11,8 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ClientRepository")
- *@UniqueEntity(fields={"email"}, message="un client possède dejà cette adresse,
-veuillez le modifier svp!" )
+ *@UniqueEntity(fields={"email"}, message="un client possède dejà cette adresse, veuillez le modifier svp!" )
  */
 class Client implements UserInterface
 {
@@ -75,15 +74,25 @@ class Client implements UserInterface
     private $commandes;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Role::class, mappedBy="Users")
+     * @ORM\OneToMany(targetEntity="App\Entity\RetourneProduit", mappedBy="client")
      */
-    private $userRoles;
+    private $retourne;
+    // /**
+    //  * @ORM\ManyToMany(targetEntity=Role::class, mappedBy="Users")
+    //  */
+    // private $userRoles;
+
+    /**
+     * @ORM\Column(type="json")
+     */
+    private $roles = [];
 
     public function __construct()
     {
         $this->commentaires = new ArrayCollection();
         $this->commandes = new ArrayCollection();
         $this->userRoles = new ArrayCollection();
+        $this->retourne = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -237,19 +246,38 @@ class Client implements UserInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getRoles()
-    {
+    // /**
+    //  * @inheritDoc
+    //  */
+    // public function getRoles()
+    // {
 
-        $roles=$this->userRoles->map(function($role){
-            return $role->getTitre();
-        })->toArray();
-      $roles[]='ROLE_USER';
-        return $roles;
+    //     $roles=$this->userRoles->map(function($role){
+    //         return $role->getTitre();
+    //     })->toArray();
+    //   $roles[]='ROLE_USER';
+    //     return $roles;
+    // }
+
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
 
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
     /**
      * @inheritDoc
      */
@@ -261,7 +289,9 @@ class Client implements UserInterface
     /**
      * @inheritDoc
      */
-    public function getSalt(){}
+    public function getSalt()
+    {
+    }
 
     /**
      * @inheritDoc
@@ -274,7 +304,9 @@ class Client implements UserInterface
     /**
      * @inheritDoc
      */
-    public function eraseCredentials(){}
+    public function eraseCredentials()
+    {
+    }
 
     /**
      * @return Collection|Role[]
@@ -299,6 +331,37 @@ class Client implements UserInterface
         if ($this->userRoles->contains($userRole)) {
             $this->userRoles->removeElement($userRole);
             $userRole->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RetourneProduit[]
+     */
+    public function getRetourne(): Collection
+    {
+        return $this->retourne;
+    }
+
+    public function addRetourne(RetourneProduit $retourne): self
+    {
+        if (!$this->retourne->contains($retourne)) {
+            $this->retourne[] = $retourne;
+            $retourne->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRetourne(RetourneProduit $retourne): self
+    {
+        if ($this->retourne->contains($retourne)) {
+            $this->retourne->removeElement($retourne);
+            // set the owning side to null (unless already changed)
+            if ($retourne->getClient() === $this) {
+                $retourne->setClient(null);
+            }
         }
 
         return $this;

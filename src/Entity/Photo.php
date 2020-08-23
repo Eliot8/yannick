@@ -30,13 +30,11 @@ class Photo
      * @ORM\JoinColumn(nullable=false)
      */
     private $modeleChaussure;
-    private $photo_class;
+    // private $photo_class;
 
 
     public function __construct()
     {
-
-
         $this->modeleChaussure = new ArrayCollection();
     }
 

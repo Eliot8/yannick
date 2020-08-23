@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Panier{% endblock %}
+
+{% block body%}
+<div class="container">
+    <div class="bg-info pt-2 pb-1 my-4 rounded">
+        <h3 class="lead text-center"><a href="{{ path('cart_index') }}" class="text-white">Panier</a></h3>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            {% if items | length > 0 %}
+            <table class="table table-stripped border border-secondary">
+                <thead class="bg-secondary">
+                    <tr>
+                        <th>Produit</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Taille</th>
+                        <th>Quantite</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>
+                            <a href="/detail/chaussure/{{ item.product.id }}" class="card-link text-white">
+                                <img class="d-block w-100 rounded" src="/img/{{item.product.coverImage}}"
+                                    alt="first slide" height="60">
+                            </a>
+                        </td>
+                        <td>
+                            <a href="/detail/chaussure/{{ item.product.id }}"
+                                class="card-link text-white">{{ item.product.nom }}</a>
+                        </td>
+                        <td>
+                            {{ (item.promo != 0) ? item.promo ~ '.00 €' : item.product.prix ~ ' €'}}
+                            {% if item.promo != 0 %}
+                                <small class="text-danger d-block" style="text-decoration-line: line-through;">{{item.product.prix ~ ' €'}}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.taille }}</td>
+                        <td>
+                            <span id="normal{{ item.stock.id }}">
+                                {{ item.qte }}
+                            </span>
+                            <span id="update{{ item.stock.id }}" class="d-none">
+                                <button class="btn btn-sm btn-dark moins" style="width: 25px; height: 27px;">-</button>
+                                <span class="badge badge-warning py-2 available_qty" style="font-size: 11px;"
+                                    data-id="{{ item.stock.id }}"
+                                    data-qte="{{ item.stock.quantite }}">{{ item.qte }}</span>
+                                <button class="btn btn-sm btn-dark plus" style="width: 25px; height: 27px;">+</button>
+                            </span>
+                        </td>
+                        <td>{{ (((item.promo != 0) ? item.promo : item.product.prix) * item.qte)  ~ '.00 €'}}</td>
+                        <td>
+                            <a href="{{ path('cart_delete', {'id': item.product.id, 'taille': item.taille}) }}"
+                                class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+                            <form action="{{ path('cart_update', {'id': item.product.id}) }}" method="POST"
+                                class="d-inline">
+                                <input type="hidden" name="qte" class="qte{{ item.stock.id }}" value="0">
+                                <input type="hidden" name="taille" value="{{ item.taille }}">
+                                <button type="submit" class="btn btn-warning btn-sm update-btn"
+                                    data-id="{{ item.stock.id }}" data-state="edit"><i
+                                        class="fas fa-pencil-alt"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="alert alert-warning">
+                le panier est vide !.
+                <a href="{{ path('marque') }}">Go to shop</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Details</div>
+                <div class="card-body">
+                    <h4>Total : <span class="float-right">{{ total ~ '.00 €' }}</span></h4>
+                </div>
+                <div class="card-footer">
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    {% if items | length > 0 %}
+                    <a href="{{ path('checkout_index') }}" class="btn btn-success btn-sm float-right"><i
+                            class="fas fa-credit-card pr-1"></i> Press to Checkout</a>
+                    {% endif %}
+                    {% else %}
+                        <small class=" text-warning">Vous ne pouvez pas passer la commande si vous n'êtes pas connecté.</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        // QTE MOINS
+        $('.moins').click(function () {
+            var qte = parseInt($(this).siblings('.available_qty').html());
+            if ((qte - 1) < 0) {
+                $(this).siblings('.available_qty').html(0);
+                $(".qte" + $(this).siblings('.available_qty').attr('data-id')).val(0);
+            } else {
+                $(this).siblings('.available_qty').html(qte - 1);
+                $(".qte" + $(this).siblings('.available_qty').attr('data-id')).val(qte - 1);
+            }
+
+        });
+
+        // QTE PLUS
+        $('.plus').click(function () {
+            var qte = parseInt($(this).siblings('.available_qty').html());
+            var qte_stable = $(this).siblings('.available_qty').attr('data-qte');
+            if ((qte + 1) > qte_stable) {
+                $(this).siblings('.available_qty').html(qte_stable);
+                $(".qte" + $(this).siblings('.available_qty').attr('data-id')).val(qte_stable);
+            } else {
+                $(this).siblings('.available_qty').html(qte + 1);
+                $(".qte" + $(this).siblings('.available_qty').attr('data-id')).val(qte + 1);
+            }
+        });
+        $('.update-btn').click(function (e) {
+            if ($(this).attr('data-state') == "edit") {
+                e.preventDefault();
+                $('#update' + $(this).attr('data-id')).removeClass('d-none');
+                $('#normal' + $(this).attr('data-id')).addClass('d-none');
+                $(this).children('i').removeClass('fa-pencil-alt').addClass('fa-save');
+                $(this).attr('data-state', 'save');
+            }
+            if ($(this).attr('data-state') == "save") {
+                $('#update' + $(this).attr('data-id')).removeClassaddClass('d-none');
+                $('#normal' + $(this).attr('data-id')).removeClass('d-none');
+                $(this).children('i').addClass('fa-save').removeClass('fa-pencil-alt');
+                $(this).attr('data-state', 'edit');
+                return true;
+            }
+        });
+    });
+</script>
+{% endblock %}

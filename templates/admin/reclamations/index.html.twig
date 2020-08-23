@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}list des reclamations{% endblock %}
+
+{% block body%}
+<div class="container">
+    <div class="bg-info pt-2 pb-1 my-4 rounded">
+        <h3 class="lead text-center"><a href="{{ path('commande_produit') }}" class="text-white">liste des
+                reclamations</a></h3>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            {% if items | length > 0 %}
+            <table class="table table-stripped border border-secondary">
+                <thead class="bg-secondary">
+                    <tr>
+                        <th>Client</th>
+                        <th>Produit</th>
+                        <th>Nom de Produit</th>
+                        <th>Prix</th>
+                        <th>Date de Retourne</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>
+                            {{ item.client.nom }}
+                        </td>
+                        <td>
+                            <a href="/detail/chaussure/{{ item.produit.id }}" class="card-link text-white">
+                                <img class="d-block rounded" src="/img/{{item.produit.coverImage}}"
+                                    alt="first slide" height="60" width="100">
+                            </a>
+                        </td>
+                        <td>
+                            <a href="/detail/chaussure/{{ item.produit.id }}"
+                                class="card-link text-white">{{ item.produit.nom }}</a>
+                        </td>
+                        <td>
+                            {% for promotion in promotions %}
+                                {% if promotion.dateFin | date('Y-m-d') >= "now"|date('Y-m-d') %}
+                                {{ (((promotion.modeleChaussure.id == item.produit.id) ? item.produit.prix - (item.produit.prix * (promotion.pourcentage / 100)) : item.produit.prix))  ~ '€'}}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {{ item.dateRetourne | date('Y-m-d') }}
+                        </td>
+                        <td>
+                            <a href="{{ path('show_reclamation', {'commande':item.commande.id, 'taille':item.taille.id, 'id':item.id}) }}" type="button" class="btn btn-warning btn-sm">voir</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="alert alert-warning">
+                Vous n'avez pas des reclamations !.
+                <button class="close" data-dissmis="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block javascripts %}
+
+{% endblock %}

@@ -1,7 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello MarqueController!{% endblock %}
+{% block title %}Les marques{% endblock %}
 
 {% block body %}
-
+<div class="container">
+    <div class="row mt-4">
+        {% for msg in app.flashes('success') %}
+        <div class="alert alert-success">{{msg}}
+            <button class="close" data-dissmis="alert">
+                <span>&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+        {% for marque in list %}
+        <div class="col-md-3 mt-4">
+            <div class="card">
+                <div class="card-header bg-secondary">
+                    <h4 class="card-body">
+                        <a href="{{ path('marques.details', {id:marque.id}) }}" class="text-white">{{ marque.nom }}</a>
+                        <span class="text-center badge badge-info rounded-circle float-right py-2 px-3">
+                            {{marque.modeleChaussures.count}} </span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

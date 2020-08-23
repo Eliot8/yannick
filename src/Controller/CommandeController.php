@@ -1,24 +1,24 @@
 <?php
 
 namespace App\Controller;
+
+use App\Controller\Services\Helpers;
 use App\Entity\Stock;
 use App\Entity\Taille;
-use Carbon\Carbon;
-
-
-use App\Entity\Client;
 use App\Entity\Livraison;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Commande;
 use App\Entity\LigneCommande;
 use App\Entity\ModeleChaussure;
-
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
+
 
 class CommandeController extends AbstractController
 {
-
 
     /**
      * @Route("/commande", name="commande")
@@ -33,9 +33,9 @@ class CommandeController extends AbstractController
             // $session = $this->get('request_stack')->getCurrentRequest()->getSession();
             $session = $request->getSession();
             $commande = new Commande();
-            if (!($session->has('panier'))) {
-
+            if (!($session->has('cart'))) {
                 return $this->redirectToRoute('panier_index');
+                // return $this->redirectToRoute('cart_index');
             }
 
             $panier = $session->get('panier');
@@ -58,11 +58,12 @@ class CommandeController extends AbstractController
                 $ligneCommande[$chaussure->getId()] = [
                     'prixU' => $chaussure->getPrix(),
                     'quantite' => intval($panier[$chaussure->getId()]),
-                    'totalU' => $totalU,];
+                    'totalU' => $totalU,
+                ];
 
                 $ligne = new LigneCommande();
                 $ligne->setQuantite($panier[$chaussure->getId()]);
-//                $chaussure->setQuantite(($chaussure->getQuantite()) - ($panier[$chaussure->getId()]));
+                //                $chaussure->setQuantite(($chaussure->getQuantite()) - ($panier[$chaussure->getId()]));
                 $ligne->setModeleChaussure($chaussure);
                 $ligne->setCommande($commande);
                 $ligne->setPrix($totalU);
@@ -90,19 +91,19 @@ class CommandeController extends AbstractController
             $livraison = new Livraison();
             $livraison->setAdresse($adress);
             $livraison->setVille($ville);
-          //  Convert the supplied date to timestamp
-//$fMin = strtotime($sStartDate);
-//$fMax = strtotime($sEndDate);
+            //  Convert the supplied date to timestamp
+            //$fMin = strtotime($sStartDate);
+            //$fMax = strtotime($sEndDate);
 
-// Generate a random number from the start and end dates
-//$fVal = mt_rand($fMin, $fMax);
+            // Generate a random number from the start and end dates
+            //$fVal = mt_rand($fMin, $fMax);
 
-// Convert back to the specified date format
-//return date($sFormat, $fVal);
+            // Convert back to the specified date format
+            //return date($sFormat, $fVal);
 
             $start_date = date('Y-m-d');
             $end_date = date("Y-m-d", strtotime("+7 day", strtotime($start_date)));
-            $randomDate = $this->randomDate($start_date,$end_date);
+            $randomDate = $this->randomDate($start_date, $end_date);
             $livraison->setDateLivraison(new \DateTime($randomDate));
 
             $livraison->setDateLivraison(new \DateTime($randomDate));
@@ -115,27 +116,26 @@ class CommandeController extends AbstractController
             $em->persist($commande);
             $em->flush();
             $session->remove('panier');
-          //  $request->getSession()->getFlashBag()->add('success', 'Commande validée avec succès');
-            $this->addFlash('success',
-                "Merci<strong class='text-danger'>{$user->getNom()}</strong> Commande validée avec succès
-");
+            //  $request->getSession()->getFlashBag()->add('success', 'Commande validée avec succès');
+            $this->addFlash(
+                'success',
+                "Merci<strong class='text-danger'>{$user->getNom()}</strong> Commande validée avec succès"
+            );
 
-            return $this->redirectToRoute( 'home');
+            return $this->redirectToRoute('home');
         }
-
     }
     function randomDate($sStartDate, $sEndDate, $sFormat = 'Y-m-d H:i:s')
     {
-// Convert the supplied date to timestamp
+        // Convert the supplied date to timestamp
         $fMin = strtotime($sStartDate);
         $fMax = strtotime($sEndDate);
 
-// Generate a random number from the start and end dates
+        // Generate a random number from the start and end dates
         $fVal = mt_rand($fMin, $fMax);
 
-// Convert back to the specified date format
+        // Convert back to the specified date format
         return date($sFormat, $fVal);
     }
-
 
 }

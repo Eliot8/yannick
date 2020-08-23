@@ -13,10 +13,18 @@
                 <a class="nav-link" href="{{ path('stock_add') }}">add new stock</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href=" /stock/{id}/edit ">update stock</a>
+                <a class="nav-link" href="{{ path('stock_editFromHeader') }}">update stock</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ path('panier_index') }}">Cart</a>
+                <a class="nav-link" href="{{ path('cart_index') }}">Cart
+            
+                {% if is_granted('ROLE_ADMIN') %}
+                {% else %}
+                {% if app.user and carts | length > 0 %}
+                <span class="badge badge-warning" style="border-radius: 15px; position: relative; top: -10px;">{{carts | length}}</span>
+                {% endif %}
+                {% endif %}
+                </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href=" {{ path('admin_modele_chaussure') }}">admin managing shoes</a>
@@ -49,6 +57,11 @@
                        id="accountDropdownLink">{{ app.user.nom }}</a>
 
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accountDopdownLink">
+                        {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('reclamations') }}" class="dropdown-item">Reclamations</a>
+                        {% else %}
+                        <a href="{{ path('commande_produit') }}" class="dropdown-item">Mes Commandes</a>
+                        {% endif %}
                         <a href="{{ path('account_profile') }}" class="dropdown-item">Modifier mon profil</a>
                         <a href="{{ path('account_password') }}" class="dropdown-item">Modifier mon mot de passe</a>
                         <a href="{{ path('account_logout') }}" class="dropdown-item">Déconnexion</a>
@@ -68,10 +81,13 @@
 </nav>
 {% for label,messages in app.flashes %}
     <div class="container">
-        <div class="alert alert-{{ label }}">
+        <div class="alert alert-{{ label }} mt-4">
             {% for message in messages %}
-                <p>{{ message|raw }}</p>
+                {{ message|raw }}
             {% endfor %}
+            <button class="close" data-dissmis="alert">
+                <span>&times;</span>
+            </button>
         </div>
     </div>
 {% endfor %}

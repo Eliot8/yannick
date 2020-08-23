@@ -42,13 +42,20 @@ class Taille
      * @ORM\OneToMany(targetEntity=LigneCommande::class, mappedBy="taille")
      */
     private $ligneCommandes;
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\RetourneProduit", mappedBy="taille")
+     */
+    private $retourne;
 
+   
+    
     public function __construct()
     {
         $this->modeleChaussures = new ArrayCollection();
         $this->commandes = new ArrayCollection();
         $this->stock = new ArrayCollection();
         $this->ligneCommandes = new ArrayCollection();
+        $this->retourne = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -180,6 +187,57 @@ class Taille
             // set the owning side to null (unless already changed)
             if ($ligneCommande->getTaille() === $this) {
                 $ligneCommande->setTaille(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function setModeleChaussures(?ModeleChaussure $modeleChaussures): self
+    {
+        $this->modeleChaussures = $modeleChaussures;
+
+        return $this;
+    }
+
+    public function setStock(?Stock $stock): self
+    {
+        $this->stock = $stock;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newTaille = null === $stock ? null : $this;
+        if ($stock->getTaille() !== $newTaille) {
+            $stock->setTaille($newTaille);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RetourneProduit[]
+     */
+    public function getRetourne(): Collection
+    {
+        return $this->retourne;
+    }
+
+    public function addRetourne(RetourneProduit $retourne): self
+    {
+        if (!$this->retourne->contains($retourne)) {
+            $this->retourne[] = $retourne;
+            $retourne->setTaille($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRetourne(RetourneProduit $retourne): self
+    {
+        if ($this->retourne->contains($retourne)) {
+            $this->retourne->removeElement($retourne);
+            // set the owning side to null (unless already changed)
+            if ($retourne->getTaille() === $this) {
+                $retourne->setTaille(null);
             }
         }
 

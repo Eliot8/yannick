@@ -26,9 +26,8 @@
                 <td>{{  modeleChaussure.nom }}</td>
                 <td>{{  modeleChaussure.prix }}</td>
                 <td>{{  modeleChaussure.description }}</td>
-                <td>{{  modeleChaussure.commandes|length}}</td>
                 <td>{{  modeleChaussure.avgRatings }}</td>
-
+                <td>{{  modeleChaussure.commandes|length}}</td>
                 <td>
                     <a href="{{ path('modeleChaussures_edit',{'id':modeleChaussure.id}) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
                     <a href="{{ path('admin_chaussures_delete',{'id':modeleChaussure.id}) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>

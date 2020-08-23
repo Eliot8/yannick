@@ -1,0 +1,228 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Panier {% endblock %}
+{% block stylesheets %}
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+    .StripeElement {
+        display: block;
+        width: 100%;
+        height: calc(1.5em + 0.75rem + 2px);
+        padding: 0.375rem 0.75rem;
+        font-size: 0.9375rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #444;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #222;
+        border-radius: 0.25rem;
+        -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+        transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+
+    }
+
+    .StripeElement--focus {
+        box-shadow: 0 1px 3px 0 #cfd7df;
+    }
+
+    .StripeElement--invalid {
+        border-color: #fa755a;
+    }
+
+    .StripeElement--webkit-autofill {
+        background-color: #fefde5 !important;
+    }
+
+    #card-errors {
+        color: #fa755a;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="bg-info pt-2 pb-1 my-4 rounded">
+        <h3 class="lead text-center"><a href="{{ path('cart_index') }}" class="text-white">Panier</a></h3>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+
+            <div class="card mt-2">
+                <div class="card-body">
+                    <form action="{{ path('checkout_add') }}" method="POST" id="payment-form">
+                        <div class="bg-secondary pt-2 pb-1 mb-4 rounded">
+                            <h3 class="lead text-center">Payment Details</h3>
+                        </div>
+                        <div class="form-group">
+                            <label for="name_on_card">Name on Carde : </label>
+                            <input type="text" name="name_on_card" id="name_on_card" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="card-element">
+                                Credit or debit card :
+                            </label>
+                            <div id="card-element">
+                                <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                            <!-- Used to display form errors. -->
+                            <div id="card-errors" role="alert"></div>
+                        </div>
+                        <button type="submit" id="complete-order" class="btn btn-success w-100 mt-4">Complete
+                            Order</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="card mt-2">
+                <!-- <div class="card-header">Your Orders</div> -->
+                <div class="card-body">
+                    <div class="bg-secondary pt-2 pb-1 mb-4 rounded">
+                        <h3 class="lead text-center">Your Orders</h3>
+                    </div>
+                    {% for item in items %}
+                    <div class="row my-2">
+                        <div class="col-3">
+                            <a href="/detail/chaussure/{{ item.product.id }}" class="card-link text-white">
+                                <img class="d-block w-50 rounded" src="/img/{{item.product.coverImage}}"
+                                    alt="first slide" height="50">
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="/detail/chaussure/{{ item.product.id }}"
+                                class="card-link text-white text-uppercase">{{ item.product.nom }}</a>
+                            <p>
+                                <small class="text-capitalize">taille :</small> <span
+                                    class="badge badge-primary">{{ item.taille }}</span> |
+                                <small class="text-capitalize">quantite :</small> <span
+                                    class="badge badge-primary">{{ item.qte }}</span>
+                            </p>
+                        </div>
+
+                        <div class="col-3">
+                            <span style="font-size: 14px; width: 115px;" class="badge badge-info">
+                                {{ (item.promo != 0) ? item.promo ~ '.00 €' : item.product.prix ~ ' €'}}
+                                {% if item.promo != 0 %}
+                                <small class="text-danger font-weight-bold ml-1"
+                                    style="text-decoration-line: line-through;">{{item.product.prix ~ ' €'}}</small>
+                                {% endif %}
+                            </span>
+                            <span style="font-size: 14px; width: 115px;" class="badge badge-warning mt-1">
+                                {{ (item.promo != 0) ? (item.promo * item.qte) ~ '.00 €' : (item.product.prix * item.qte) ~ ' €'}}
+
+                                {% if item.promo != 0 %}
+                                <small class="text-danger font-weight-bold ml-1"
+                                    style="text-decoration-line: line-through;">{{ (item.product.prix * item.qte)  ~ '.00 €' }}</small>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <hr>
+                    {% endfor %}
+                </div>
+                <div class="card-footer">
+                    <p class="float-left text-capitalize font-weight-bold">
+                        <span>{{ items | length }} Item(s)</span>
+                    </p>
+                    <p class="float-right text-capitalize font-weight-bold">total : <span class="badge badge-primary"
+                            style="font-size: 16px;">{{ total ~ '.00 €' }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    // Create a Stripe client.
+    var stripe = Stripe('pk_test_51H5enQGbE9mY9SFDfNX6OJ9Pm64zARfCIwkApztgZM3OZvzL7Iiwy7rO83Sy7nwE7oWqkyE4MY8ApepstyQLxDeR00l5kvF0sx');
+
+    // Create an instance of Elements.
+    var elements = stripe.elements();
+
+    // Custom styling can be passed to options when creating an Element.
+    // (Note that this demo uses a wider set of styles than the guide below.)
+    var style = {
+        base: {
+            color: '#32325d',
+            fontFamily: '"Roboto","Helvetica Neue", Helvetica, sans-serif',
+            fontSmoothing: 'antialiased',
+            fontSize: '16px',
+            '::placeholder': {
+                color: '#aab7c4'
+            }
+        },
+        invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a'
+        }
+    };
+
+    // Create an instance of the card Element.
+    var card = elements.create('card', {
+        style: style,
+        hidePostalCode: true
+    });
+
+    // Add an instance of the card Element into the `card-element` <div>.
+    card.mount('#card-element');
+
+    // Handle real-time validation errors from the card Element.
+    card.on('change', function (event) {
+        var displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+
+    // Handle form submission.
+    var form = document.getElementById('payment-form');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // DISABLED THE SUBMIT BUTTON
+        // document.getElementById('complete-order').disabled = true;
+
+
+        stripe.createToken(card).then(function (result) {
+            if (result.error) {
+                // Inform the user if there was an error.
+                var errorElement = document.getElementById('card-errors');
+                errorElement.textContent = result.error.message;
+
+                // DISABLED THE SUBMIT BUTTON
+                // document.getElementById('complete-order').disabled = true;
+                
+                // alert('nice');
+            } else {
+                // Send the token to your server.
+                stripeTokenHandler(result.token);
+                // window.location.href = '/facture';
+            }
+        });
+    });
+
+    // Submit the form with the token ID.
+    function stripeTokenHandler(token) {
+        // Insert the token ID into the form so it gets submitted to the server
+        var form = document.getElementById('payment-form');
+        var hiddenInput = document.createElement('input');
+        hiddenInput.setAttribute('type', 'hidden');
+        hiddenInput.setAttribute('name', 'stripeToken');
+        hiddenInput.setAttribute('value', token.id);
+        form.appendChild(hiddenInput);
+
+        // Submit the form
+        form.submit();
+
+    }
+</script>
+{% endblock %}

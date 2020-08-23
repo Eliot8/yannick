@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\Services\Helpers;
 use App\Entity\Client;
 use App\Entity\Commentaire;
 use App\Entity\ModeleChaussure;
@@ -13,6 +14,7 @@ use App\Form\ModeleChaussureType;
 use App\Repository\ClientRepository;
 use App\Repository\MarqueRepository;
 use App\Repository\ModeleChaussureRepository;
+use App\Repository\PromotionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,10 +33,12 @@ class DetailChaussureController extends AbstractController
      */
     private $marqueRepository;
     private $clientRepository;
-    function __construct(MarqueRepository $marqueRepository,ClientRepository $clientRepository)
+    private $promotion;
+    function __construct(MarqueRepository $marqueRepository, ClientRepository $clientRepository, PromotionRepository $promotionRepository)
     {
         $this->marqueRepository = $marqueRepository;
-        $this->clientRepository=$clientRepository;
+        $this->clientRepository = $clientRepository;
+        $this->promotion = $promotionRepository;
     }
 
     /**
@@ -46,17 +50,17 @@ class DetailChaussureController extends AbstractController
      * @return Response
      * @throws \Exception
      */
-    public function index(ModeleChaussureRepository $repository,Request $request, EntityManagerInterface $manager,int $id)
+    public function index(Helpers $helpers, ModeleChaussureRepository $repository, Request $request, EntityManagerInterface $manager, int $id)
     {
         $list = $this->marqueRepository->findAll();
         $chaussure = $repository->find($id);
-        $comment=new Commentaire();
+        $comment = new Commentaire();
 
 
 
-        $form=$this->createForm(CommentaireType::class,$comment);
+        $form = $this->createForm(CommentaireType::class, $comment);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
 
             $comment->setDateCommentaire(new \DateTime())
                 ->setModele($chaussure)
@@ -67,22 +71,35 @@ class DetailChaussureController extends AbstractController
                 'success',
                 "Votre message a bien été pris en compte!"
             );
-
-
         }
 
         $taille = $this->getDoctrine()->getRepository(Taille::class)->findAll();
         $stocks = $this->getDoctrine()->getRepository(Stock::class)->findBy(array('modeleChaussure' => $chaussure));
+
         $stocksArr = array();
         foreach ($stocks as $stock) {
-           // dd($stock);
             $stocksArr = array($stock->getTaille()->getId() => $stock->getQuantite());
         }
 
+        // recupere les promotion
+        $promotion = null;
+
+        // si date fin de promotion est plus grand d'aujourd'hui
+        if (count((array)$this->promotion->findOneBy(['modeleChaussure' => $chaussure])) > 0) {
+            if ($this->promotion->findOneBy(['modeleChaussure' => $chaussure])->getDateFin()->format('Y-m-d') > date('Y-m-d')) {
+                $promotion = $this->promotion->findOneBy(['modeleChaussure' => $chaussure]);
+            }
+        }
+
         return $this->render('detail_chaussure/index.html.twig', [
-            'chaussure' => $chaussure,'list'=>$list,'commentForm'=>$form->createView(),
+            'chaussure' => $chaussure,
+            'list' => $list,
+            'carts' => $helpers->getProduct(), // produits de panier
+            'commentForm' => $form->createView(),
             'taille' => $taille,
-            'stocksArr' => $stocksArr
+            'stocksArr' => $stocksArr,
+            'stocks' => $stocks,
+            'promotion' => $promotion
         ]);
     }
 
@@ -90,9 +107,9 @@ class DetailChaussureController extends AbstractController
      * @Route("/chaussure/new", name="chaussure_nouveau",methods={"GET","POST"})
      * @param Request $request
      * @param EntityManagerInterface $manager
-     * @return Response
+     * @return Respons
      */
-    public function create(Request $request,EntityManagerInterface $manager)
+    public function create(Request $request, EntityManagerInterface $manager)
     {
         $chaussure = new ModeleChaussure();
         $manager = $this->getDoctrine()->getManager();
@@ -100,18 +117,15 @@ class DetailChaussureController extends AbstractController
         $form = $this->createForm(ModeleChaussureType::class, $chaussure);
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $file = $form->get('coverImage')->getData();
-            $fileName = $this->generateUniqueFileName().'.'.$file->guessExtension();
-            try{
+            $fileName = $this->generateUniqueFileName() . '.' . $file->guessExtension();
+            try {
                 $file->move(
                     $this->getParameter('coverImage_directory'),
                     $fileName
                 );
-            }
-            catch (fileException $e){
-
+            } catch (fileException $e) {
             }
 
 
@@ -121,15 +135,15 @@ class DetailChaussureController extends AbstractController
             $manager->flush();
 
             //on recupere les photos transmises
-            $photos=   $form->get('photos')->getData();
+            $photos =   $form->get('photos')->getData();
             //on boucle sur les photos
 
             //   $photos =$chaussure->getPhotos();
 
-            foreach($photos as $photo) {
+            foreach ($photos as $photo) {
 
                 //on genere un nouveau nom de fichier
-                $fileName =  md5(uniqid()) .'.'. $photo->guessExtension();
+                $fileName =  md5(uniqid()) . '.' . $photo->guessExtension();
                 //on copie le fichier dans le dossier coverImage
                 $photo->move(
                     $this->getParameter('coverImage_directory'),
@@ -137,31 +151,34 @@ class DetailChaussureController extends AbstractController
 
                 );
 
-                $picture=new Photo();
+                $picture = new Photo();
                 $picture->setUrl($fileName);
 
                 $chaussure->addPhoto($picture);
             }
             //on stocke la photo dans la base de donnees
             $this->getDoctrine()->getManager()->flush();
-            $manager=$this->getDoctrine()->getManager();
+            $manager = $this->getDoctrine()->getManager();
             $manager->persist($chaussure);
             $manager->flush();
 
 
 
-            $manager=$this->getDoctrine()->getManager();
+            $manager = $this->getDoctrine()->getManager();
             $manager->persist($chaussure);
             $manager->flush();
 
-            $this->addFlash('success',
-                "Bravo <strong class='text-danger'>{$chaussure->getNom()}</strong> Insertion reussie");
+            $this->addFlash(
+                'success',
+                "Bravo <strong class='text-danger'>{$chaussure->getNom()}</strong> Insertion reussie"
+            );
             return $this->redirectToRoute('home');
         }
         $list = $this->marqueRepository->findAll();
 
-        return $this->render('detail_chaussure/nouvelle_chaussure.html.twig', ['form'=>$form->createView(),
-            'list'=>$list
+        return $this->render('detail_chaussure/nouvelle_chaussure.html.twig', [
+            'form' => $form->createView(),
+            'list' => $list
         ]);
     }
 
@@ -173,13 +190,12 @@ class DetailChaussureController extends AbstractController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    public function edit(Request $request, ModeleChaussure $chaussure,EntityManagerInterface $manager)
+    public function edit(Request $request, ModeleChaussure $chaussure, EntityManagerInterface $manager)
     {
         $form = $this->createForm(ModeleChaussureType::class, $chaussure);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
             //on recupere les photos transmises
             $photos = $form->get('photos')->getData();
@@ -215,13 +231,16 @@ class DetailChaussureController extends AbstractController
             $manager->flush();
             $this->getDoctrine()->getManager()->flush();
 
-            $this->addFlash('success',
-                "Bravo <strong class='text-danger'>{$chaussure->getNom()}</strong> Modification reussie");
+            $this->addFlash(
+                'success',
+                "Bravo <strong class='text-danger'>{$chaussure->getNom()}</strong> Modification reussie"
+            );
             return $this->redirectToRoute('home');
         }
         $list = $this->marqueRepository->findAll();
 
-        return $this->render('detail_chaussure/edit.html.twig', ['form' => $form->createView(),
+        return $this->render('detail_chaussure/edit.html.twig', [
+            'form' => $form->createView(),
             'list' => $list,
             'chaussure' => $chaussure
         ]);
@@ -235,11 +254,11 @@ class DetailChaussureController extends AbstractController
      * @return JsonResponse
      * @Route("detail/chaussure/supprime/photo/{id}",name="chaussures_photo_supprime",methods={"DELETE"})
      */
-    public function delete(Photo $photo,Request $request)
+    public function delete(Photo $photo, Request $request)
     {
-        $data=json_decode($request->getContent(),true);
+        $data = json_decode($request->getContent(), true);
         //on verifie si le token est valide
-        if($this->isCsrfTokenValid('delete'.$photo->getId(),$data['_token'])) {
+        if ($this->isCsrfTokenValid('delete' . $photo->getId(), $data['_token'])) {
             //on recupere le nom de la photo
             $nom = $photo->getUrl();
             //on supprime le fichier
@@ -250,13 +269,9 @@ class DetailChaussureController extends AbstractController
             $manager->flush();
             //on repond en json
             return new JsonResponse(['success' => 1]);
+        } else {
+            return new JsonResponse(['error' => 'Token Invalide'], 400);
         }
-        else {
-            return new JsonResponse(['error'=>'Token Invalide'],400);
-        }
-
-
-
     }
 
 

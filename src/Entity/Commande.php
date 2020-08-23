@@ -58,9 +58,10 @@ class Commande
      */
     private $modeleChaussures;
 
-    public function prePersist(){
-        if(empty($this->dateCommande)){
-            $this->dateCommande=new \DateTime();
+    public function prePersist()
+    {
+        if (empty($this->dateCommande)) {
+            $this->dateCommande = new \DateTime();
         }
     }
 
@@ -74,12 +75,19 @@ class Commande
      */
     private $ligneCommandes;
 
+
+    // POUR LA TABLE RTOURNEPRODUIT
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\RetourneProduit", mappedBy="commande")
+     */
+    private $retourne;
     public function __construct()
     {
         $this->commentaires = new ArrayCollection();
         $this->modeleChaussures = new ArrayCollection();
         $this->tailles = new ArrayCollection();
         $this->ligneCommandes = new ArrayCollection();
+        $this->retourne = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -254,6 +262,37 @@ class Commande
             // set the owning side to null (unless already changed)
             if ($ligneCommande->getCommande() === $this) {
                 $ligneCommande->setCommande(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RetourneProduit[]
+     */
+    public function getRetourne(): Collection
+    {
+        return $this->retourne;
+    }
+
+    public function addRetourne(RetourneProduit $retourne): self
+    {
+        if (!$this->retourne->contains($retourne)) {
+            $this->retourne[] = $retourne;
+            $retourne->setCommande($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRetourne(RetourneProduit $retourne): self
+    {
+        if ($this->retourne->contains($retourne)) {
+            $this->retourne->removeElement($retourne);
+            // set the owning side to null (unless already changed)
+            if ($retourne->getCommande() === $this) {
+                $retourne->setCommande(null);
             }
         }
 

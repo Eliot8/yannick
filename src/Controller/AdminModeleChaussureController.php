@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\Services\Helpers;
 use App\Entity\ModeleChaussure;
 use App\Repository\ClientRepository;
 use App\Repository\MarqueRepository;
@@ -18,10 +19,12 @@ class AdminModeleChaussureController extends AbstractController
      */
     private $marqueRepository;
     private $clientRepository;
-    function __construct(MarqueRepository $marqueRepository,ClientRepository $clientRepository)
+    private $helpers;
+    function __construct(MarqueRepository $marqueRepository, ClientRepository $clientRepository, Helpers $helpers)
     {
         $this->marqueRepository = $marqueRepository;
-        $this->clientRepository=$clientRepository;
+        $this->clientRepository = $clientRepository;
+        $this->helpers = $helpers;
     }
 
     /**
@@ -31,9 +34,11 @@ class AdminModeleChaussureController extends AbstractController
      */
     public function index(ModeleChaussureRepository $repo)
     {
-        $list = $this->marqueRepository->findAll();
+        dd($repo->findAll([], ['id' => 'asc']));
         return $this->render('admin/admin_modele_chaussure/index.html.twig', [
-            'modeleChaussures'=>$repo->findAll(),  'list' =>$list
+            'modeleChaussures' => $repo->findAll(),
+            'list' => $this->marqueRepository->findAll(),
+            'carts' => $this->helpers->getProduct()
         ]);
     }
 
@@ -45,14 +50,14 @@ class AdminModeleChaussureController extends AbstractController
      * @return RedirectResponse
      */
 
-    public function  deleteShoes(ModeleChaussure $chaussure,EntityManagerInterface $manager)
+    public function  deleteShoes(ModeleChaussure $chaussure, EntityManagerInterface $manager)
     {
-        if (count($chaussure->getCommandes())>0){
+        if (count($chaussure->getCommandes()) > 0) {
             $this->addFlash(
                 'warning',
                 "you can't delete this shoe<stong>{$chaussure->getNom()}</stong>it has been already ordered!"
             );
-        }else{
+        } else {
             $manager->remove($chaussure);
             $manager->flush();
             $this->addFlash(
