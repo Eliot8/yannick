@@ -64,12 +64,12 @@ class Client implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Ville", inversedBy="clients")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private $ville;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Commande", mappedBy="client")
+     * @ORM\OneToMany(targetEntity="App\Entity\Commande", mappedBy="client", cascade={"remove"})
      */
     private $commandes;
 
@@ -77,10 +77,6 @@ class Client implements UserInterface
      * @ORM\OneToMany(targetEntity="App\Entity\RetourneProduit", mappedBy="client")
      */
     private $retourne;
-    // /**
-    //  * @ORM\ManyToMany(targetEntity=Role::class, mappedBy="Users")
-    //  */
-    // private $userRoles;
 
     /**
      * @ORM\Column(type="json")
@@ -245,20 +241,6 @@ class Client implements UserInterface
 
         return $this;
     }
-
-    // /**
-    //  * @inheritDoc
-    //  */
-    // public function getRoles()
-    // {
-
-    //     $roles=$this->userRoles->map(function($role){
-    //         return $role->getTitre();
-    //     })->toArray();
-    //   $roles[]='ROLE_USER';
-    //     return $roles;
-    // }
-
 
     /**
      * @see UserInterface

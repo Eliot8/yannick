@@ -33,11 +33,6 @@ class LigneCommande
     private $modeleChaussure;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $relation;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Taille::class, inversedBy="ligneCommandes")
      */
     private $taille;
@@ -89,18 +84,6 @@ class LigneCommande
     public function setModeleChaussure(?ModeleChaussure $modeleChaussure): self
     {
         $this->modeleChaussure = $modeleChaussure;
-
-        return $this;
-    }
-
-    public function getRelation(): ?string
-    {
-        return $this->relation;
-    }
-
-    public function setRelation(?string $relation): self
-    {
-        $this->relation = $relation;
 
         return $this;
     }

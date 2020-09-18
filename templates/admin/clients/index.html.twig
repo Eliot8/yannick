@@ -1,0 +1,83 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{parent()}} | Gestion des Clients{% endblock %}
+{% block stylesheets %}
+<script src="https://kit.fontawesome.com/e003ccf534.js" crossorigin="anonymous"></script>
+{% endblock %}
+{% block body %}
+<div class=" container container-fluid">
+    <h1 class="mb-3 text-center">Gestion des Clients</h1>
+    <hr>
+    <table class="table table-hover border border-secondary">
+        <thead class="bg-light text-white">
+            <tr>
+                <th>Id</th>
+                <th>Nom Complet</th>
+                <th>Sexe</th>
+                <th>Email</th>
+                <th>Adresse</th>
+                <th>Ville</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for client in clients %}
+            <tr>
+                <td>{{ client.id }}</td>
+                <td>{{ client.nom }} {{ client.prenom }}</td>
+                <td>{{ client.sexe }}</td>
+                <td>{{ client.email }}</td>
+                <td>{{ client.adresse }}</td>
+                <td>{{ client.ville.nom }}</td>
+                <td>
+                    {% for role in client.roles if role == "ROLE_ADMIN" %}
+                    <span class="badge badge-info">Admin</span>
+                    {% else %}
+                    <span class="badge badge-success">User</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    <button type="button" data-toggle="modal" data-target="#delete{{client.id}}"
+                        class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+
+            <!-- Supprimer Modal -->
+            <div class="modal fade" id="delete{{client.id}}" data-backdrop="static" data-keyboard="false"
+                tabindex="-1" aria-labelledby="delete{{client.id}}Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger">
+                            <h5 class="modal-title lead text-uppercase" id="staticBackdropLabel">Supprimer ce client </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body py-3">
+                            <h2 class="lead">Voulez vous vraiment supprimer ce client ?</h2>
+                        </div>
+                        <div class="modal-footer border-light">
+                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Non</button>
+                            <form action="{{ path('admin_delete_client', {'id': client.id}) }}" method="POST">
+                                <button type="submit" class="btn btn-danger btn-sm">Oui</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Supprimer Modal -->
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+{% block javascripts %}
+<script>
+    $(document).ready(function(){
+        if($('.form-error-message').text() != ""){
+            $('#add').modal('show');
+        }
+    });
+</script>
+{% endblock %}

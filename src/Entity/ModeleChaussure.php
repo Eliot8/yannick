@@ -58,7 +58,7 @@ class ModeleChaussure
     private $marque;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Photo",cascade={"persist"},mappedBy="modeleChaussure",orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Photo",mappedBy="modeleChaussure",orphanRemoval=true)
      * @Assert\NotNull
      */
     private $photos;

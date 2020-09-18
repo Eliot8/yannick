@@ -52,7 +52,7 @@ class Facture
     private $totalTTC;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Commande", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Commande", inversedBy="facture", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $commande;

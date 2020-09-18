@@ -6,6 +6,7 @@ use App\Entity\Commande;
 use App\Entity\LigneCommande;
 use App\Entity\Livraison;
 use App\Repository\CommandeRepository;
+use App\Repository\LigneCommandeRepository;
 use App\Repository\LivraisonRepository;
 use App\Repository\MarqueRepository;
 use App\Repository\ModeleChaussureRepository;
@@ -31,7 +32,8 @@ class Helpers
     private $security;
     private $modePaiement;
     private $sessionInterface;
-    public function __construct(SessionInterface $sessionInterface, MarqueRepository $marqueRepository, ModeleChaussureRepository $modeleChaussureRepository, StockRepository $stockRepository, TailleRepository $tailleRepository, EntityManagerInterface $em, PromotionRepository $promotionRepository, LivraisonRepository $livraisonRepository, ModePaiementRepository $modePaiementRepository, CommandeRepository $commandeRepository, Security $security)
+    private $ligneCommande;
+    public function __construct(SessionInterface $sessionInterface, MarqueRepository $marqueRepository, ModeleChaussureRepository $modeleChaussureRepository, StockRepository $stockRepository, TailleRepository $tailleRepository, EntityManagerInterface $em, PromotionRepository $promotionRepository, LivraisonRepository $livraisonRepository, ModePaiementRepository $modePaiementRepository, CommandeRepository $commandeRepository, Security $security, LigneCommandeRepository $ligneCommandeRepository)
     {
         $this->list = $marqueRepository;
         $this->shoe = $modeleChaussureRepository;
@@ -44,6 +46,7 @@ class Helpers
         $this->security = $security;
         $this->sessionInterface = $sessionInterface;
         $this->commande = $commandeRepository;
+        $this->ligneCommande = $ligneCommandeRepository;
     }
 
     // RECUPERE LA LISTE DES MARQUES
@@ -57,7 +60,7 @@ class Helpers
     {
         // recuper le panier
         $cart = $this->sessionInterface->get('cart', []);
-        
+
         $items = [];
 
         /* pour chaque prdouit dans le panier
@@ -124,7 +127,7 @@ class Helpers
             foreach ($taille as $_taille => $qte) {
                 $items[] = [
                     'product' => $this->shoe->find($id),
-                    'product_price' => $this->shoe->find($id)->getPrix(),
+                    'product_price' => $this->getPromotion($this->shoe->find($id)),
                     'taille' => $_taille,
                     'qte' => $qte['qte']
                 ];
@@ -185,7 +188,7 @@ class Helpers
             if ($product->getId() === $promotion_item->getModeleChaussure()->getId()) {
 
                 // si date fin de promotion est plus grand d'aujourd'hui
-                if ($promotion_item->getDateFin()->format('Y-m-d') > date('Y-m-d')){
+                if ($promotion_item->getDateFin()->format('Y-m-d') > date('Y-m-d')) {
                     // calcule le nouveau prix
                     $newPrice = $product->getPrix() - ($product->getPrix() * ($promotion_item->getPourcentage() / 100));
                 }
@@ -299,5 +302,22 @@ class Helpers
 
         // Convert back to the specified date format
         return date($sFormat, $fVal);
+    }
+    /**
+     * get count commandes for admin panel
+     *
+     * @return array
+     */
+    public function getCountcommandes(): array
+    {
+        $commandes = [];
+        foreach ($this->shoe->findAll() as $_shoe) {
+            // dd($this->ligneCommande->findAll());
+            $commandes[] = [
+                'id' => $_shoe->getId(),
+                'count' => count($this->ligneCommande->findBy(['modeleChaussure' => $_shoe->getId()]))
+            ];
+        }
+        return $commandes;
     }
 }

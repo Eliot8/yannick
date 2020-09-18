@@ -45,7 +45,7 @@
                                         <td>
                                             <a href="/detail/chaussure/{{ item.modeleChaussure.id }}"
                                                 class="card-link text-white">
-                                                <img class="d-block w-100 rounded"
+                                                <img class="d-block rounded"
                                                     src="/img/{{item.modeleChaussure.coverImage}}" alt="first slide"
                                                     height="60">
                                             </a>
@@ -55,23 +55,14 @@
                                                 class="card-link text-white">{{ item.modeleChaussure.nom }}</a>
                                         </td>
                                         <td>
-                                            {% for promotion in promotions %}
-                                            {% if promotion.dateFin | date('Y-m-d') >= "now"|date('Y-m-d') %}
-                                            {{ (((promotion.modeleChaussure.id == item.modeleChaussure.id) ? item.prix - (item.prix * (promotion.pourcentage / 100)) : item.prix))  ~ '.00 €'}}
-                                            {% endif %}
-                                            {% endfor %}
+                                            <span class="badge badge-pill badge-primary">{{ item.prix ~ '.00 €'}}</span>   
                                         </td>
                                         <td>{{ item.taille.taille }}</td>
                                         <td>
                                             {{ item.quantite }}
                                         </td>
                                         <td>
-                                            {% for promotion in promotions %}
-                                            {% if promotion.dateFin | date('Y-m-d') >= "now"|date('Y-m-d') %}
-                                            {{ (((promotion.modeleChaussure.id == item.modeleChaussure.id) ? item.prix - (item.prix * (promotion.pourcentage / 100)) : item.prix)) * item.quantite  ~ '.00 €'}}
-                                            {% endif %}
-                                            {% endfor %}
-
+                                           <span class="badge badge-pill badge-warning"> {{ (item.prix * item.quantite)  ~ '.00 €'}} </span>
                                         </td>
                                         <td>
                                             {% if item.reclame == false %}

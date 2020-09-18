@@ -1,0 +1,75 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{parent()}} | Gestion des Commentaires{% endblock %}
+{% block stylesheets %}
+<script src="https://kit.fontawesome.com/e003ccf534.js" crossorigin="anonymous"></script>
+{% endblock %}
+{% block body %}
+<div class=" container container-fluid">
+    <h1 class="mb-3 text-center">Gestion des Commentaires</h1>
+    <hr>
+    <table class="table table-hover border border-secondary">
+        <thead class="bg-light text-white">
+            <tr>
+                <th>Id</th>
+                <th>Nom de Client</th>
+                <th>Nom de Chaussure</th>
+                <th>Commentaire</th>
+                <th>Date commentaire</th>
+                <th>Note</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for commentaire in commentaires %}
+            <tr>
+                <td>{{  commentaire.id }}</td>
+                <td>{{  commentaire.modele.nom }}</td>
+                <td>{{  commentaire.client.nom }}</td>
+                <td>{{  commentaire.commentaire }}</td>
+                <td>{{  commentaire.dateCommentaire | date('Y-m-d') }}</td>
+                <td>{{  commentaire.rating }}</td>
+                <td>
+                    <button type="button" data-toggle="modal" data-target="#delete{{commentaire.id}}"
+                        class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+
+            <!-- Supprimer Modal -->
+            <div class="modal fade" id="delete{{commentaire.id}}" data-backdrop="static" data-keyboard="false"
+                tabindex="-1" aria-labelledby="delete{{commentaire.id}}Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger">
+                            <h5 class="modal-title lead text-uppercase" id="staticBackdropLabel">Supprimer ce commentaire </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body py-3">
+                            <h2 class="lead">Voulez vous vraiment supprimer ce commentaire ?</h2>
+                        </div>
+                        <div class="modal-footer border-light">
+                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Non</button>
+                            <form action="{{ path('admin_delete_commentaire', {'id': commentaire.id}) }}" method="POST">
+                                <button type="submit" class="btn btn-danger btn-sm">Oui</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Supprimer Modal -->
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+{% block javascripts %}
+<script>
+    $(document).ready(function(){
+        if($('.form-error-message').text() != ""){
+            $('#add').modal('show');
+        }
+    });
+</script>
+{% endblock %}

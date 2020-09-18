@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Form;
+
 use App\Entity\Marque;
 use App\Entity\ModeleChaussure;
 use App\Entity\Photo;
@@ -24,59 +25,63 @@ class ModeleChaussureType extends AbstractType
     {
         $builder
             ->add('nom', TextType::class)
-            ->add('prix',MoneyType::class)
-            ->add('description', TextareaType::class)
-         ->add('coverImage',FileType::class,array(
-             'label'=>'upload coverImage',
-           //      'mapped'=>false,
-                 'data_class'=>null
-
-             )
-
-
-         )
-
-            ->setMethod("POST")
-
-
-            ->add('marque',EntityType::class,[
-                'class'=>Marque::class,
-                'choice_label'=>'nom'
-            ])
-
-
-          ->add(
-               'photos',
-
-               FileType::class,[
-                  'label'=>'upload others pictures',
-
-              'by_reference' => true,
-                  'multiple' => true,
-                   'data_class'=>null,
-                   'mapped'=>false,
-                 'required'=>false,]
-
-       )
-
-      //*  ->add('photos', CollectionType::class, [
-          //   'entry_type' => PhotoType::class,
-         //   'allow_add' => true,
-         //   'allow_delete' => true,
-       //     'prototype' => true,
-        //   'by_reference' => false,
-       //      'label' => false,
-      //      'mapped'=>false,
-     //    ])
-
-
-      ->add('Ajouter une nouvelle chaussure',SubmitType::class,[
-                'attr'=>[
-                   'class'=>'btn btn-success'
+            ->add('prix', TextType::class)
+            ->add('description', TextareaType::class, [
+                'attr' => [
+                    'rows' => '8',
                 ]
-           ])
+            ])
+            // ->add('coverImage', FileType::class, array(
+            //     'label' => false,
+            //     'data_class' => null,
+            //     // 'required' => false,
+            //     'attr' => [
+            //         'class' => 'my-2'
+            //     ]
+            //     //      'mapped'=>false,
 
-     ;
+            // ))
+            // ->setMethod("POST")
+
+
+            ->add('marque', EntityType::class, [
+                'class' => Marque::class,
+                'choice_label' => 'nom'
+            ])
+            // dd
+            // ->add(
+            //     'photos',
+            //     FileType::class,
+            //     [
+            //         'label' => false,
+            //         'by_reference' => true,
+            //         'multiple' => true,
+            //         'data_class' => null,
+            //         'mapped' => false,
+            //         // 'required' => false,
+            //         'attr' => [
+            //             'id' => 'file-input',
+            //             'class' => false 
+            //         ]
+            //     ]
+            // )
+
+            //*  ->add('photos', CollectionType::class, [
+            //   'entry_type' => PhotoType::class,
+            //   'allow_add' => true,
+            //   'allow_delete' => true,
+            //     'prototype' => true,
+            //   'by_reference' => false,
+            //      'label' => false,
+            //      'mapped'=>false,
+            //    ])
+
+
+            ->add('valider', SubmitType::class, [
+                'attr' => [
+                    'class' => 'btn btn-primary float-right btn-sm'
+                ]
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

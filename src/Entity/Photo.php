@@ -26,7 +26,7 @@ class Photo
     public $url;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\ModeleChaussure", inversedBy="photos")
+     * @ORM\ManyToOne(targetEntity="App\Entity\ModeleChaussure", inversedBy="photos", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $modeleChaussure;

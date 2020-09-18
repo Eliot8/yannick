@@ -1,7 +1,55 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block body %}
-    <h1>Bonjour!</h1>
+<div class="container">
+    <div class="bg-info pt-2 pb-1 my-4 rounded">
+        <h3 class="lead text-center">
+
+            les chaussures en promotion
+
+        </h3>
+    </div> 
+    <hr>
+    <div class="row">
+        {% for modeleChaussure in chaussures %}
+                    {% for promo in promo %}
+                        {% if (promo.dateFin | date('Y-m-d') >= "now"|date('Y-m-d')) and (promo.modeleChaussure.id == modeleChaussure.id) %}
+                            <div class="col-md-4">
+                                <div class="card my-2">
+                                    <div class="card-header text-center">
+                                        <a href="/detail/chaussure/{{ modeleChaussure.id }}">{{ modeleChaussure.nom }} </a>,
+                                        <strong>{{ modeleChaussure.prix }}&euro;</strong><br>
+                                        {% if modeleChaussure.commentaires|length>0 %}
+                                        {% include 'partials/rating.html.twig' with {'rating':modeleChaussure.avgRatings} %}
+                                        {% else %}
+                                        <small>Pas encore noté</small>
+                                        {% endif %}
+                                                <span class="badge badge-pill badge-danger">{{promo.pourcentage ~ '%'}}</span>            
+                                    </div>
+                                    <div class="card-body">
+                                        <h4 class="text-capitalize text-center mb-4">
+                                            <a href="{{ path('detail_chaussure',{'id':modeleChaussure.id}) }}">{{ modeleChaussure.nom }}
+                                            </a>
+                                        </h4>
+                                        <a href="{{ path('detail_chaussure',{'id':modeleChaussure.id}) }}">
+                                            <img src="/img/{{ modeleChaussure.coverImage }}" alt="Image de la chaussure"
+                                                class="w-100 rounded" />
+                                        </a>
+                                        <p class="font-weight-light p-2">
+                                            description de la chaussure
+                                        </p>
+                                        <a href="{{ path('detail_chaussure',{'id':modeleChaussure.id}) }} "
+                                            class="btn btn-secondary float-right">En
+                                            savoir
+                                            plus!</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

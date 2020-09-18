@@ -182,8 +182,6 @@ class AccountController extends AbstractController
         // Recupere les produits retournés identifié (par commande)
         $retourne_produit = $this->getDoctrine()->getRepository(RetourneProduit::class)->findBy(['commande' => $commandes]);
 
-        
-
         return $this->render('commande_produit/index.html.twig', [
             'list' => $helpers->getList(), // list des marques
             'carts' => $helpers->getProduct(), // produits de panier

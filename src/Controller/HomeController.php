@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Controller\Services\Helpers;
 use App\Repository\ClientRepository;
 use App\Repository\MarqueRepository;
+use App\Repository\ModeleChaussureRepository;
+use App\Repository\PromotionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -15,11 +17,9 @@ class HomeController extends AbstractController
      * @var ClientRepository
      */
     private $marqueRepository;
-    private $clientRepository;
-    function __construct(MarqueRepository $marqueRepository, ClientRepository $clientRepository)
+    function __construct(MarqueRepository $marqueRepository)
     {
         $this->marqueRepository = $marqueRepository;
-        $this->clientRepository = $clientRepository;
     }
 
 
@@ -27,12 +27,14 @@ class HomeController extends AbstractController
     /**
      * @Route("/", name="home")
      */
-    public function index(Helpers $helpers)
+    public function index(Helpers $helpers, ModeleChaussureRepository $modeleChaussureRepository, PromotionRepository $promotionRepository)
     {
-        $list = $this->marqueRepository->findAll();
         return $this->render('home/index.html.twig', [
-            'list' => $list, // liste des marques
+            'list' => $this->marqueRepository->findAll(), // liste des marques
             'carts' => $helpers->getProduct(), // produits de panier
+            'chaussures' => $modeleChaussureRepository->findAll(),
+            'promo' => $promotionRepository->findAll()
         ]);
     }
+
 }

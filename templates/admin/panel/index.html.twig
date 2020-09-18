@@ -1,0 +1,60 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Panneau d'administration{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="mb-3 text-center">Panneau d'administration</h1>
+    <hr>
+    <div class="row my-2">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Gérer les Modele chaussures</h5>
+                    <a href="{{ path('admin_modele_chaussure') }}" class="btn btn-dark float-right">Gérer</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Gérer les Promotions</h5>
+                    <a href="{{ path('admin_promotions') }}" class="btn btn-dark float-right">Gérer</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Gérer les Réclamations</h5>
+                    <a href="{{ path('reclamations') }}" class="btn btn-dark float-right">Gérer</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3" style="max-width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Gérer les Commentaires</h5>
+                    <a href="{{ path('admin_commentaires') }}" class="btn btn-dark float-right">Gérer</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-light mb-3" style="max-width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Gérer les Clients</h5>
+                    <a href="{{ path('admin_clients' )}}" class="btn btn-dark float-right">Gérer</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Gérer les Stocks</h5>
+                    <a href="{{ path('admin_stocks') }}" class="btn btn-dark float-right">Gérer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

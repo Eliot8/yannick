@@ -2,10 +2,17 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PromotionRepository")
+ * @UniqueEntity(
+ *     fields="modeleChaussure",
+ *     message="la promotion de cette chaussure est deja exist"
+ * )
  */
 class Promotion
 {
@@ -18,16 +25,19 @@ class Promotion
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\GreaterThan("today", message="la date debut doit etre superieur de la date d'aujourd'hui")
      */
     private $dateDebut;
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\GreaterThan("today")
      */
     private $dateFin;
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\Range(min=1, max=99, minMessage="Vous devez mesurer au moins 1 pour entrer", maxMessage="Vous ne pouvez pas mesurer plus de 99 pour entrer")
      */
     private $pourcentage;
 
@@ -88,5 +98,17 @@ class Promotion
         $this->modeleChaussure = $modeleChaussure;
 
         return $this;
+    }
+
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        if ($this->dateDebut > $this->dateFin) {
+            $context->buildViolation('La date de début doit être antérieure à la date de fin')
+                ->atPath('dateDebut')
+                ->addViolation();
+        }
     }
 }

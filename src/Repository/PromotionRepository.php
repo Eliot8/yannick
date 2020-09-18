@@ -19,22 +19,18 @@ class PromotionRepository extends ServiceEntityRepository
         parent::__construct($registry, Promotion::class);
     }
 
-    // /**
-    //  * @return Promotion[] Returns an array of Promotion objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Cette Methode nous permet de recupere les promotion selon la date d'aujourd'hui
+     * @return Promotion[] Returns an array of Promotion objects
+     */
+    public function findByDate(\DateTime $date)
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
+            ->where('p.dateFin >= :date')
+            ->setParameter('date', $date)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?Promotion

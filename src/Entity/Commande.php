@@ -54,6 +54,12 @@ class Commande
     private $modePaiement;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Facture", mappedBy="commande", cascade={"persist","remove"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $facture;
+
+    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\ModeleChaussure", mappedBy="commandes")
      */
     private $modeleChaussures;
@@ -71,14 +77,14 @@ class Commande
     private $tailles;
 
     /**
-     * @ORM\OneToMany(targetEntity=LigneCommande::class, mappedBy="commande")
+     * @ORM\OneToMany(targetEntity=LigneCommande::class, mappedBy="commande", cascade={"remove"})
      */
     private $ligneCommandes;
 
 
     // POUR LA TABLE RTOURNEPRODUIT
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\RetourneProduit", mappedBy="commande")
+     * @ORM\OneToMany(targetEntity="App\Entity\RetourneProduit", mappedBy="commande", cascade={"remove"})
      */
     private $retourne;
     public function __construct()
@@ -88,6 +94,7 @@ class Commande
         $this->tailles = new ArrayCollection();
         $this->ligneCommandes = new ArrayCollection();
         $this->retourne = new ArrayCollection();
+        $this->facture = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -293,6 +300,41 @@ class Commande
             // set the owning side to null (unless already changed)
             if ($retourne->getCommande() === $this) {
                 $retourne->setCommande(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getFacture(): ?Facture
+    {
+        return $this->facture;
+    }
+
+    public function setFacture(Facture $facture): self
+    {
+        $this->facture = $facture;
+
+        return $this;
+    }
+
+    public function addFacture(Facture $facture): self
+    {
+        if (!$this->facture->contains($facture)) {
+            $this->facture[] = $facture;
+            $facture->setCommande($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFacture(Facture $facture): self
+    {
+        if ($this->facture->contains($facture)) {
+            $this->facture->removeElement($facture);
+            // set the owning side to null (unless already changed)
+            if ($facture->getCommande() === $this) {
+                $facture->setCommande(null);
             }
         }
 

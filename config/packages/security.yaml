@@ -4,44 +4,46 @@ security:
             algorithm: bcrypt
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        in_memory: { memory: null}
+        in_memory: { memory: null }
         in_database:
             entity:
                 class: App\Entity\Client
                 property: email
         #app_user_provider:
-            #entity:
-                #class: App\Entity\Client
-                #property: email
+        #entity:
+        #class: App\Entity\Client
+        #property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-            
+
         admin:
-             pattern: ^/admin
-             anonymous: true
+            pattern: ^/admin_panel
+            anonymous: true
 
-             provider: in_database
+            provider: in_database
 
-             form_login:
-                 login_path: admin_account_login
-                 check_path: admin_account_login
+            form_login:
+                login_path: admin_account_login
+                check_path: admin_account_login
+                default_target_path: admin_panel
 
-             logout:
-                  path: admin_account_logout
-                  target: /
+            logout:
+                path: admin_account_logout
+                target: /
 
         main:
             anonymous: true
 
             provider: in_database
             #guard:
-                #authenticators:
-                    #- App\Security\LoginFormAuthenticator
+            #authenticators:
+            #- App\Security\LoginFormAuthenticator
             form_login:
                 login_path: account_login
                 check_path: account_login
+                default_target_path: /
 
             logout:
                 path: account_logout
@@ -49,13 +51,12 @@ security:
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
-
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/admin, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin, roles: ROLE_ADMIN }
-      # - { path: ^/profile, roles: ROLE_USER }
+        # - { path: ^/admin_panel, roles: ROLE_ADMIN }
+        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        # - { path: ^/profile, roles: ROLE_USER }

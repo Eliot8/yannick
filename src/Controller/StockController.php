@@ -157,4 +157,36 @@ class StockController extends AbstractController
             'stock' => $stock
         ]);
     }
+
+    /**
+     * Methode edit from admin 
+     * @Route("/stock/{stock_id}/{chaussure_slug}/edit/{chaussure_id}" ,name="edit_from_admin",methods={"GET","POST"})
+     * @param Request $request
+     * @param EntityManagerInterface $manager
+     * @return RedirectResponse|Response
+     */
+    public function editFromAdmin($stock_id, Request $request, $chaussure_id, Helpers $helpers)
+    {
+        $list = $this->marqueRepository->findAll();
+        $stock = $this->stockRepository->findOneBy(['id' => $stock_id]);
+        $chaussure = $this->chaussureRepository->findOneBy(['id' => $chaussure_id]);
+
+
+        $form = $this->createForm(StockType::class, $stock);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->manager->persist($stock);
+            $this->manager->flush();
+
+            $this->addFlash('success', 'les modifications sont bien enregistré.');
+            return $this->redirectToRoute('admin_modele_chaussure');
+        }
+        return $this->render('stock/edition.html.twig', [
+            'form' => $form->createView(),
+            'list' => $list,
+            'carts' => $helpers->getProduct(),
+            'chaussure' => $chaussure,
+            'stock' => $stock
+        ]);
+    }
 }

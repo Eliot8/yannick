@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
 {% block title %}list des reclamations{% endblock %}
 
@@ -17,7 +17,6 @@
                         <th>Client</th>
                         <th>Produit</th>
                         <th>Nom de Produit</th>
-                        <th>Prix</th>
                         <th>Date de Retourne</th>
                         <th>Actions</th>
                     </tr>
@@ -37,13 +36,6 @@
                         <td>
                             <a href="/detail/chaussure/{{ item.produit.id }}"
                                 class="card-link text-white">{{ item.produit.nom }}</a>
-                        </td>
-                        <td>
-                            {% for promotion in promotions %}
-                                {% if promotion.dateFin | date('Y-m-d') >= "now"|date('Y-m-d') %}
-                                {{ (((promotion.modeleChaussure.id == item.produit.id) ? item.produit.prix - (item.produit.prix * (promotion.pourcentage / 100)) : item.produit.prix))  ~ '€'}}
-                                {% endif %}
-                            {% endfor %}
                         </td>
                         <td>
                             {{ item.dateRetourne | date('Y-m-d') }}

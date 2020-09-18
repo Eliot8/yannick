@@ -70,7 +70,8 @@ class RetourneProduitController extends AbstractController
         return $this->render('admin/reclamations/index.html.twig', [
             'items' => $reclamations,
             'list'  => $helpers->getList(), // list des marques
-            'promotions' => $promotionRepository->findAll()
+            'promotions' => $promotionRepository->findAll(),
+            'carts' => $helpers->getProduct(),
         ]);
     }
 
@@ -92,7 +93,8 @@ class RetourneProduitController extends AbstractController
             'produit' => $ligne_commande, // info de produit
             'retourne_info' => $retourn_info, // info de reclamation (raison et la date)
             'list'  => $helpers->getList(), // list des marques
-            'promotions' => $promotionRepository->findAll()
+            'promotions' => $promotionRepository->findAll(), 
+            'carts' => $helpers->getProduct(),
 
         ]);
     }

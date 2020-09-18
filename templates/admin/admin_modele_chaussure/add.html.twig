@@ -1,0 +1,102 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ parent() }} | Edit Modele Chaussure {% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="/css/multiple.css">
+<script src="https://kit.fontawesome.com/e003ccf534.js" crossorigin="anonymous"></script>
+{% endblock %}
+{% block body %}
+<div class=" container container-fluid">
+    {# <h1 class="mb-3 text-center">Ajouter modeleChaussure </h1>
+    <hr> #}
+    <div class="row">
+        <div class="col-md-12 mx-auto">
+            <div class="card">
+                <div class="card-header bg-info">
+                    <h2 class="card-title text-center">Ajouter modeleChaussure</h2>
+                </div>
+                <div class="card-body">
+                    {{form_start(form, {'multipart': 'true'})}}
+                    <fieldset class="border p-4 bg-secondary rounded">
+                        <legend class="w-auto">Info</legend>
+                        <div class="form-group row">
+                            <div class="col">
+                                {{form_row(form.nom, {'required': 'true'})}}
+                                {{form_row(form.marque) }}
+                                {{form_row(form.prix, {'type': 'number', 'required': 'true'})}}
+                            </div>
+                            <div class="col">
+                                {{form_row(form.description, {'required': 'true'}) }}
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="border p-4 bg-secondary rounded">
+                        <legend class="w-auto">Images</legend>
+                        <div class="form-group row">
+                            <div class="col-4">
+                                <label for="file">Image Cover</label>
+                                 <div class="d-flex">
+                                    <div>
+                                        <span class="thumb-insid">
+                                            <img src="" id="img_principal" class="thumb">
+                                        </span>
+                                    </div>
+                                    <div class='upload-field-customized'>
+                                        <input type="file" name="cover_image" class="modele_chaussure_coverImage" required>
+                                        <span>
+                                            <i class="fas fa-camera"></i>
+                                            <p>Ajouter</p>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-8">
+                                <label for="files">Multiple images</label>
+                                <div class="d-flex">
+                                    <div id="thumb-output">
+                                    </div>
+                                    <div class='upload-field-customized' id="send-data">
+                                        <input type="file" name="multiple_files[]" id="file-input" multiple required>
+                                        <span>
+                                            <i class="fas fa-camera"></i>
+                                            <p>Ajouter</p>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="card-footer">
+                    {{form_widget(form.valider)}}
+                    {{form_end(form)}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+<script>
+    $(document).ready(function () {
+        $('.modele_chaussure_coverImage').change(function () {
+            var input = this;
+            var url = $(this).val();
+            var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+            if (input.files && input.files[0] && (ext == "gif" || ext == "png" || ext == "jpeg" ||
+                    ext == "jpg" || ext == "webp")) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#img_principal').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                $('#img_principal').attr('src', '/assets/no_preview.png');
+            }
+        });
+    });
+</script>
+<script src="/js/upload.js"></script>
+
+{% endblock %}

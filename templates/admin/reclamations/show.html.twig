@@ -25,12 +25,7 @@
                                 <h6 class="card-title">Taille : {{ produit.taille.taille }}</h6>
                                 <h6 class="card-title">Quantite : {{ produit.quantite }}</h6>
                                 <h6 class="card-title">
-                                Prix : 
-                                {% for promotion in promotions %}
-                                {% if promotion.dateFin | date('Y-m-d') >= "now"|date('Y-m-d') %}
-                                {{ (((promotion.modeleChaussure.id == produit.modeleChaussure.id) ? produit.modeleChaussure.prix - (produit.modeleChaussure.prix * (promotion.pourcentage / 100)) : produit.modeleChaussure.prix))  ~ '€'}}
-                                {% endif %}
-                            {% endfor %}
+                                Prix : <span class="badge badge-pill badge-primary">{{ produit.prix ~ '.00 €'}}</span> 
                                 </h6>
                             </div>
                             <hr>

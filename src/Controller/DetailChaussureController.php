@@ -86,7 +86,7 @@ class DetailChaussureController extends AbstractController
 
         // si date fin de promotion est plus grand d'aujourd'hui
         if (count((array)$this->promotion->findOneBy(['modeleChaussure' => $chaussure])) > 0) {
-            if ($this->promotion->findOneBy(['modeleChaussure' => $chaussure])->getDateFin()->format('Y-m-d') > date('Y-m-d')) {
+            if ($this->promotion->findOneBy(['modeleChaussure' => $chaussure])->getDateFin()->format('Y-m-d') >= date('Y-m-d')) {
                 $promotion = $this->promotion->findOneBy(['modeleChaussure' => $chaussure]);
             }
         }
